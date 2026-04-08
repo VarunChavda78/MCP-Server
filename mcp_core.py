@@ -1,6 +1,18 @@
 from github_client import fetch_workflow_logs
 from llm_analyzer import analyze_logs
-from actions import update_google_sheet, send_slack_message, create_jira_issue
+from actions import update_google_sheet, send_slack_msg, create_jira_issue
+
+# Optional: GitHub username → Slack user ID mapping
+# You can store this in config.py or a separate JSON file
+GITHUB_TO_SLACK_ID = {
+    "dhruv": "U0AR2DE15JB",      # example
+    "mananv": "U1234567890",
+    # add more as needed
+}
+
+def get_slack_user_id(github_username):
+    """Convert GitHub username to Slack user ID (if mapping exists)."""
+    return GITHUB_TO_SLACK_ID.get(github_username, None)
 
 def mcp_orchestrate(payload):
     """
@@ -35,18 +47,19 @@ def mcp_orchestrate(payload):
     severity = analysis.get("severity", "medium")
 
     # Step 3: Actions
-    # Update Google Sheet
+    # 3.1 Update Google Sheet
     update_google_sheet(
         task_name=f"Fix: {root_cause[:50]}",
         owner=actor,
         status="Pending"
     )
 
-    # Slack notification
+    # 3.2 Slack notification (using bot token)
     slack_msg = f"*CI Failure* on `{head_branch}`\nRoot cause: {root_cause}\nSuggestion: {suggestion}"
-    send_slack_message(slack_msg)
+    slack_user_id = get_slack_user_id(actor)  # convert GitHub user to Slack ID if possible
+    send_slack_msg(slack_msg, user_id=slack_user_id)
 
-    # Jira issue (optional)
+    # 3.3 Jira issue (only for high severity)
     if severity == "high":
         create_jira_issue(
             summary=f"[Auto] Pipeline failure on {repo}",
