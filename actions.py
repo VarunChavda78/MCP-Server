@@ -7,6 +7,7 @@ def update_google_sheet(task_name, owner, status):
         ENTRY_TASK: task_name,
         ENTRY_OWNER: owner,
         ENTRY_STATUS: status
+        
     }
     try:
         resp = requests.post(GOOGLE_FORM_URL, data=data)
