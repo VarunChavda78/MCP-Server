@@ -1,0 +1,8 @@
+services:
+  mcp-server:
+    build: .
+    ports:
+      - "5002:5000"
+    env_file:
+      - .env
+    restart: always
