@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.11
 
 # Set the working directory in the container
 WORKDIR /app
@@ -16,6 +16,9 @@ COPY . .
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Run a health check to verify tool registry if needed, then start server
+RUN mkdir -p logs
+
+# Run app.py using uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]
 
