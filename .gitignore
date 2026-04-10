@@ -5,6 +5,5 @@ __pycache__/
 *.pyo
 .DS_Store
 .idea/
-*.log
 *.sqlite3
 *.pytest_cache/
