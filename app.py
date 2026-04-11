@@ -108,12 +108,12 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
             if tool_name == "send_slack_notification":
                 from mcp_server import send_slack_notification
                 send_slack_notification(**tool_args)
+                from mcp_server import create_jira_issue
+                create_jira_issue(**tool_args)
             elif tool_name == "update_tracking_sheet":
                 from mcp_server import update_tracking_sheet
                 update_tracking_sheet(**tool_args)
-            elif tool_name == "create_jira_issue":
-                from mcp_server import create_jira_issue
-                create_jira_issue(**tool_args)
+            # elif tool_name == "create_jira_issue":
 
     except Exception as e:
         error_msg = f" Agent Error: {e}"
