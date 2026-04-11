@@ -64,7 +64,7 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
        - Backend -> Khushi Patel
     4. Should we notify Slack? (Yes, always on failure. Include the correct 'user_id' for @mention)
     5. Should we update the sheet? (Yes, use the assigned member's name as 'owner')
-    6. Should we create a Jira issue? (Only if it's a critical infrastructure failure)
+    6. Should we create a Jira issue? (YES, if it's a critical infrastructure failure like a credential error, docker daemon issue, or recurring environmental problem).
 
     RESPONSE FORMAT:
     Provide a JSON object with keys for tools to call, for example:

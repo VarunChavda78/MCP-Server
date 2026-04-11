@@ -53,9 +53,43 @@ def create_jira_issue(summary: str, description: str) -> str:
     """
     Create a JIRA issue for tracking high-severity failures.
     """
-    print(f"DEBUG: Placeholder for JIRA issue creation: {summary}")
-    # In a real scenario, you'd use the jira-python library or requests.post to JIRA API
-    return f"Successfully created JIRA issue: {summary} (Placeholder)"
+    from config import JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY, JIRA_ISSUE_TYPE
+    
+    if not all([JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY]):
+        return "JIRA not fully configured. Missing URL, Email, Token, or Project Key."
+
+    # Ensure URL is properly formatted
+    base_url = JIRA_URL.split("/rest/api")[0].rstrip("/")
+    api_url = f"{base_url}/rest/api/2/issue"
+
+    auth = (JIRA_EMAIL, JIRA_API_TOKEN)
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "fields": {
+            "project": {
+                "key": JIRA_PROJECT_KEY
+            },
+            "summary": summary,
+            "description": description,
+            "issuetype": {
+                "name": JIRA_ISSUE_TYPE
+            }
+        }
+    }
+
+    try:
+        resp = requests.post(api_url, json=payload, auth=auth, headers=headers)
+        if resp.status_code == 201:
+            issue_key = resp.json().get("key")
+            return f"Successfully created JIRA issue: {issue_key}"
+        else:
+            return f"Error creating JIRA issue: {resp.status_code} - {resp.text}"
+    except Exception as e:
+        return f"Exception while reaching JIRA: {e}"
 
 if __name__ == "__main__":
     # Standard entry point for MCP stdio transport (useful for local debugging)
