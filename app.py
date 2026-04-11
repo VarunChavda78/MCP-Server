@@ -4,7 +4,6 @@ from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import JSONResponse
 from mcp_server import mcp
-from llm_analyzer import analyze_logs
 import google.generativeai as genai
 import json
 from github_client import fetch_workflow_logs
