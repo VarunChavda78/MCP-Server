@@ -403,8 +403,8 @@ function escHtml(str) {
 function updateStatistics() {
     const list = Object.values(workflows);
     const total = list.length;
-    const success = list.filter(wf => wf.status === "success" || wf.current_step === "COMPLETED").length;
-    const failure = list.filter(wf => wf.status === "failure" || wf.current_step === "ERROR").length;
+    const success = list.filter(wf => wf.status === "success").length;
+    const failure = list.filter(wf => wf.status === "failure").length;
 
     if (statsTotal) statsTotal.textContent = total;
     if (statsSuccess) statsSuccess.textContent = success;
