@@ -105,15 +105,15 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
             print(f" Executing MCP Tool: {tool_name}")
             
             # Use the MCP server's internal dispatch or direct call for simplicity
-            if tool_name == "send_slack_notification":
-                from mcp_server import send_slack_notification
-                send_slack_notification(**tool_args)
+            if tool_name == "create_jira_issue":
                 from mcp_server import create_jira_issue
                 create_jira_issue(**tool_args)
+            elif tool_name == "send_slack_notification":
+                from mcp_server import send_slack_notification
+                send_slack_notification(**tool_args)
             elif tool_name == "update_tracking_sheet":
                 from mcp_server import update_tracking_sheet
                 update_tracking_sheet(**tool_args)
-            # elif tool_name == "create_jira_issue":
 
     except Exception as e:
         error_msg = f" Agent Error: {e}"
