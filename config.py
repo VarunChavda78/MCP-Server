@@ -4,11 +4,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Slack bot
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 SLACK_USER_ID = os.getenv("SLACK_USER_ID")   # optional default
+
+# Team Member IDs
+SLACK_ID_VARUN = os.getenv("SLACK_ID_VARUN")
+SLACK_ID_KHUSHI = os.getenv("SLACK_ID_KHUSHI")
+SLACK_ID_MANAV = os.getenv("SLACK_ID_MANAV")
 
 # Google Sheet (via Form)
 GOOGLE_FORM_URL = os.getenv("GOOGLE_FORM_URL")

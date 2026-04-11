@@ -5,17 +5,26 @@ from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import JSONResponse
 from mcp_server import mcp
 from llm_analyzer import analyze_logs
-import g4f
-from g4f.client import Client
+import google.generativeai as genai
 import json
 from github_client import fetch_workflow_logs
+from config import GOOGLE_API_KEY, SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV
 
 app = FastAPI(title="MCP DevOps Webhook")
-client = Client()
 
-# Directory for log persistence
+# Initialize Gemini
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
+    model = genai.GenerativeModel('gemini-flash-latest')
+else:
+    model = None
+    print("Warning: GOOGLE_API_KEY not found. Agent analysis will be disabled.")
+
+# Directory for log and analysis persistence
 LOG_DIR = "logs"
+ANALYSIS_DIR = "analysis"
 os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(ANALYSIS_DIR, exist_ok=True)
 
 async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, logs_content: str):
     """
@@ -34,8 +43,13 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     A CI/CD pipeline failed in repo '{repo}' on branch '{branch}'.
     
     LOGS:
-    {logs_content[:4000]}
+    {logs_content[:]}
     
+    TEAM MEMBERS:
+    - Varun Chavda (DevOps): {SLACK_ID_VARUN}
+    - Manav Thakkar (Frontend): {SLACK_ID_MANAV}
+    - Khushi Patel (Backend): {SLACK_ID_KHUSHI}
+
     As a DevOps Agent, you have access to the following MCP TOOLS:
     1. send_slack_notification(message, user_id=None)
     2. update_tracking_sheet(task, owner, status)
@@ -43,33 +57,45 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
 
     DECIDE:
     1. What is the root cause?
-    2. Should we notify Slack? (Yes, always on failure)
-    3. Should we update the sheet? (Yes, for tracking)
-    4. Should we create a Jira issue? (Only if it's a critical infrastructure failure)
+    2. Categorize the error: DevOps, Frontend, or Backend.
+    3. Assign the correct team member and use their SLACK ID:
+       - DevOps -> Varun Chavda
+       - Frontend -> Manav Thakkar
+       - Backend -> Khushi Patel
+    4. Should we notify Slack? (Yes, always on failure. Include the correct 'user_id' for @mention)
+    5. Should we update the sheet? (Yes, use the assigned member's name as 'owner')
+    6. Should we create a Jira issue? (Only if it's a critical infrastructure failure)
 
     RESPONSE FORMAT:
     Provide a JSON object with keys for tools to call, for example:
     {{
-        "analysis": "Brief root cause",
+        "analysis": "Brief root cause and category",
         "tools": [
-            {{"name": "send_slack_notification", "args": {{"message": "Analysis details..."}}}},
-            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "actor", "status": "Pending"}}}}
+            {{"name": "send_slack_notification", "args": {{"message": "Analysis details...", "user_id": "MEMBER_ID"}}}},
+            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}}
         ]
     }}
     """
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4", # g4f will use a default provider
-            messages=[{"role": "user", "content": prompt}]
-        )
-        content = response.choices[0].message.content
+        if not model:
+            print("❌ Gemini model not initialized.")
+            return
+
+        response = model.generate_content(prompt)
+        content = response.text
+        
         # Basic JSON extraction (naive)
         start = content.find('{')
         end = content.rfind('}') + 1
         decision = json.loads(content[start:end])
         
         print(f" Agent Decision: {decision.get('analysis')}")
+
+        # Persistence: Save analysis
+        analysis_path = os.path.join(ANALYSIS_DIR, f"{run_id}_analysis.json")
+        with open(analysis_path, "w") as f:
+            json.dump(decision, f, indent=4)
 
         # Execute Tools
         for tool_call in decision.get("tools", []):
@@ -90,7 +116,10 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
                 create_jira_issue(**tool_args)
 
     except Exception as e:
-        print(f" Agent Error: {e}")
+        error_msg = f" Agent Error: {e}"
+        print(error_msg)
+        with open(os.path.join(ANALYSIS_DIR, f"{run_id}_error.txt"), "w") as f:
+            f.write(error_msg)
 
 @app.post("/webhook")
 async def handle_webhook(
