@@ -20,6 +20,26 @@
     </header>
 
     <main>
+        <section id="stats-section">
+            <div class="stats-grid">
+                <div class="stats-card total">
+                    <div class="stats-label">Total Pipelines</div>
+                    <div class="stats-value" id="stats-total">0</div>
+                    <div class="stats-icon">∑</div>
+                </div>
+                <div class="stats-card success">
+                    <div class="stats-label">Success</div>
+                    <div class="stats-value" id="stats-success">0</div>
+                    <div class="stats-icon">✓</div>
+                </div>
+                <div class="stats-card failure">
+                    <div class="stats-label">Failures</div>
+                    <div class="stats-value" id="stats-failure">0</div>
+                    <div class="stats-icon">✗</div>
+                </div>
+            </div>
+        </section>
+
         <section id="active-section">
             <h2>Active Workflows</h2>
             <div id="active-workflows" class="workflow-grid">

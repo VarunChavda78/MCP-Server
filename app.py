@@ -92,7 +92,7 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     if status != "failure":
         print(f"Skipping agent workflow for successful run: {run_id}")
         await emit_event(run_id, "SKIPPED", {"reason": "non-failure status"})
-        return
+        return {"status": "success"}
 
     print(f" Agent starting analysis for {repo} (Run: {run_id})")
 

@@ -70,6 +70,9 @@ const activeContainer = document.getElementById("active-workflows");
 const completedContainer = document.getElementById("completed-workflows");
 const connDot = document.getElementById("connection-status");
 const connText = document.getElementById("connection-text");
+const statsTotal = document.getElementById("stats-total");
+const statsSuccess = document.getElementById("stats-success");
+const statsFailure = document.getElementById("stats-failure");
 
 // ── Initial load ──────────────────────────────────
 fetch("/api/workflows")
@@ -79,6 +82,7 @@ fetch("/api/workflows")
             workflows[wf.run_id] = wf;
             renderWorkflow(wf);
         });
+        updateStatistics();
     })
     .catch(err => console.error("Failed to load workflows:", err));
 
@@ -98,6 +102,7 @@ function connectSSE() {
         const wf = update.workflow;
         workflows[wf.run_id] = wf;
         renderWorkflow(wf);
+        updateStatistics();
     };
 
     evtSource.onerror = () => {
@@ -393,4 +398,15 @@ function escHtml(str) {
     const div = document.createElement("div");
     div.textContent = String(str);
     return div.innerHTML;
+}
+
+function updateStatistics() {
+    const list = Object.values(workflows);
+    const total = list.length;
+    const success = list.filter(wf => wf.status === "success" || wf.current_step === "COMPLETED").length;
+    const failure = list.filter(wf => wf.status === "failure" || wf.current_step === "ERROR").length;
+
+    if (statsTotal) statsTotal.textContent = total;
+    if (statsSuccess) statsSuccess.textContent = success;
+    if (statsFailure) statsFailure.textContent = failure;
 }
