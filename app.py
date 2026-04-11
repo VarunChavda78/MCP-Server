@@ -71,7 +71,8 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
         "analysis": "Brief root cause and category",
         "tools": [
             {{"name": "send_slack_notification", "args": {{"message": "Analysis details...", "user_id": "MEMBER_ID"}}}},
-            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}}
+            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}},
+            {{"name": "create_jira_issue", "args": {{"summary": "Critical failure in...", "description": "Full log context..."}}}}
         ]
     }}
     """
