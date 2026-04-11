@@ -1,0 +1,501 @@
+--- FILE: build/1_Set up job.txt ---
+﻿2026-04-11T11:52:42.1296003Z Current runner version: '2.333.1'
+2026-04-11T11:52:42.1322950Z ##[group]Runner Image Provisioner
+2026-04-11T11:52:42.1323920Z Hosted Compute Agent
+2026-04-11T11:52:42.1324479Z Version: 20260213.493
+2026-04-11T11:52:42.1325082Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-04-11T11:52:42.1325860Z Build Date: 2026-02-13T00:28:41Z
+2026-04-11T11:52:42.1326487Z Worker ID: {1a917185-af16-4a0e-8ba1-c2a300288b3a}
+2026-04-11T11:52:42.1327182Z Azure Region: northcentralus
+2026-04-11T11:52:42.1327812Z ##[endgroup]
+2026-04-11T11:52:42.1329937Z ##[group]Operating System
+2026-04-11T11:52:42.1330602Z Ubuntu
+2026-04-11T11:52:42.1331188Z 24.04.4
+2026-04-11T11:52:42.1331616Z LTS
+2026-04-11T11:52:42.1332105Z ##[endgroup]
+2026-04-11T11:52:42.1332684Z ##[group]Runner Image
+2026-04-11T11:52:42.1333238Z Image: ubuntu-24.04
+2026-04-11T11:52:42.1333739Z Version: 20260406.80.1
+2026-04-11T11:52:42.1334829Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260406.80/images/ubuntu/Ubuntu2404-Readme.md
+2026-04-11T11:52:42.1336630Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260406.80
+2026-04-11T11:52:42.1337575Z ##[endgroup]
+2026-04-11T11:52:42.1338566Z ##[group]GITHUB_TOKEN Permissions
+2026-04-11T11:52:42.1341216Z Contents: read
+2026-04-11T11:52:42.1341855Z Metadata: read
+2026-04-11T11:52:42.1342324Z ##[endgroup]
+2026-04-11T11:52:42.1344550Z Secret source: Actions
+2026-04-11T11:52:42.1345686Z Prepare workflow directory
+2026-04-11T11:52:42.1700338Z Prepare all required actions
+2026-04-11T11:52:42.1739092Z Getting action download info
+2026-04-11T11:52:42.5179138Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-11T11:52:42.6750880Z Download action repository 'docker/login-action@v3' (SHA:c94ce9fb468520275223c153574b00df6fe4bcc9)
+2026-04-11T11:52:43.2908694Z Complete job name: build
+
+
+--- FILE: build/2_Checkout code.txt ---
+﻿2026-04-11T11:52:43.3668007Z ##[group]Run actions/checkout@v4
+2026-04-11T11:52:43.3669033Z with:
+2026-04-11T11:52:43.3669501Z   repository: VarunChavda78/SSF
+2026-04-11T11:52:43.3670477Z   token: ***
+2026-04-11T11:52:43.3670913Z   ssh-strict: true
+2026-04-11T11:52:43.3671371Z   ssh-user: git
+2026-04-11T11:52:43.3671826Z   persist-credentials: true
+2026-04-11T11:52:43.3672322Z   clean: true
+2026-04-11T11:52:43.3672787Z   sparse-checkout-cone-mode: true
+2026-04-11T11:52:43.3673313Z   fetch-depth: 1
+2026-04-11T11:52:43.3673746Z   fetch-tags: false
+2026-04-11T11:52:43.3674187Z   show-progress: true
+2026-04-11T11:52:43.3674969Z   lfs: false
+2026-04-11T11:52:43.3675661Z   submodules: false
+2026-04-11T11:52:43.3676163Z   set-safe-directory: true
+2026-04-11T11:52:43.3677038Z ##[endgroup]
+2026-04-11T11:52:43.4775704Z Syncing repository: VarunChavda78/SSF
+2026-04-11T11:52:43.4777662Z ##[group]Getting Git version info
+2026-04-11T11:52:43.4778381Z Working directory is '/home/runner/work/SSF/SSF'
+2026-04-11T11:52:43.4779382Z [command]/usr/bin/git version
+2026-04-11T11:52:43.4833977Z git version 2.53.0
+2026-04-11T11:52:43.4861452Z ##[endgroup]
+2026-04-11T11:52:43.4884508Z Temporarily overriding HOME='/home/runner/work/_temp/d2fe1cd4-4263-496b-bcb8-e13fade0b9fa' before making global git config changes
+2026-04-11T11:52:43.4886091Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-11T11:52:43.4889850Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SSF/SSF
+2026-04-11T11:52:43.4923664Z Deleting the contents of '/home/runner/work/SSF/SSF'
+2026-04-11T11:52:43.4927749Z ##[group]Initializing the repository
+2026-04-11T11:52:43.4932093Z [command]/usr/bin/git init /home/runner/work/SSF/SSF
+2026-04-11T11:52:43.5015897Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-04-11T11:52:43.5017212Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-04-11T11:52:43.5018220Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-04-11T11:52:43.5019985Z hint: call:
+2026-04-11T11:52:43.5020585Z hint:
+2026-04-11T11:52:43.5021495Z hint: 	git config --global init.defaultBranch <name>
+2026-04-11T11:52:43.5022144Z hint:
+2026-04-11T11:52:43.5022921Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-04-11T11:52:43.5024345Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-04-11T11:52:43.5025483Z hint:
+2026-04-11T11:52:43.5026087Z hint: 	git branch -m <name>
+2026-04-11T11:52:43.5026580Z hint:
+2026-04-11T11:52:43.5027237Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-04-11T11:52:43.5028279Z Initialized empty Git repository in /home/runner/work/SSF/SSF/.git/
+2026-04-11T11:52:43.5030799Z [command]/usr/bin/git remote add origin https://github.com/VarunChavda78/SSF
+2026-04-11T11:52:43.5062661Z ##[endgroup]
+2026-04-11T11:52:43.5063779Z ##[group]Disabling automatic garbage collection
+2026-04-11T11:52:43.5067099Z [command]/usr/bin/git config --local gc.auto 0
+2026-04-11T11:52:43.5095791Z ##[endgroup]
+2026-04-11T11:52:43.5096580Z ##[group]Setting up auth
+2026-04-11T11:52:43.5103327Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-04-11T11:52:43.5133943Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-04-11T11:52:43.5413664Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-11T11:52:43.5444038Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-04-11T11:52:43.5662358Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-11T11:52:43.5695638Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-04-11T11:52:43.5919309Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-04-11T11:52:43.5954903Z ##[endgroup]
+2026-04-11T11:52:43.5955779Z ##[group]Fetching the repository
+2026-04-11T11:52:43.5964516Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b7baa392e914d72df54c09e016fa7535373ad574:refs/remotes/origin/main
+2026-04-11T11:52:44.5069752Z From https://github.com/VarunChavda78/SSF
+2026-04-11T11:52:44.5072175Z  * [new ref]         b7baa392e914d72df54c09e016fa7535373ad574 -> origin/main
+2026-04-11T11:52:44.5104094Z ##[endgroup]
+2026-04-11T11:52:44.5106222Z ##[group]Determining the checkout info
+2026-04-11T11:52:44.5108539Z ##[endgroup]
+2026-04-11T11:52:44.5113136Z [command]/usr/bin/git sparse-checkout disable
+2026-04-11T11:52:44.5154747Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-04-11T11:52:44.5184507Z ##[group]Checking out the ref
+2026-04-11T11:52:44.5188980Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-04-11T11:52:45.1137357Z Switched to a new branch 'main'
+2026-04-11T11:52:45.1138230Z branch 'main' set up to track 'origin/main'.
+2026-04-11T11:52:45.1157389Z ##[endgroup]
+2026-04-11T11:52:45.1197831Z [command]/usr/bin/git log -1 --format=%H
+2026-04-11T11:52:45.1231587Z b7baa392e914d72df54c09e016fa7535373ad574
+
+
+--- FILE: build/3_Login to Docker Hub.txt ---
+﻿2026-04-11T11:52:45.1456697Z ##[group]Run docker/login-action@v3
+2026-04-11T11:52:45.1457023Z with:
+2026-04-11T11:52:45.1457422Z   username: ***
+2026-04-11T11:52:45.1457648Z   password: ***
+2026-04-11T11:52:45.1457837Z   logout: true
+2026-04-11T11:52:45.1458013Z ##[endgroup]
+2026-04-11T11:52:45.4532581Z Logging into docker.io...
+2026-04-11T11:52:45.7438404Z Login Succeeded!
+
+
+--- FILE: build/4_Build Backend Image.txt ---
+﻿2026-04-11T11:52:45.7584180Z ##[group]Run docker build -t ***/ssf-backend:latest ./backend 2>&1 | tee backend.log
+2026-04-11T11:52:45.7585028Z [36;1mdocker build -t ***/ssf-backend:latest ./backend 2>&1 | tee backend.log[0m
+2026-04-11T11:52:45.7611008Z shell: /usr/bin/bash -e {0}
+2026-04-11T11:52:45.7611650Z ##[endgroup]
+2026-04-11T11:52:46.1730872Z #0 building with "default" instance using docker driver
+2026-04-11T11:52:46.1731485Z 
+2026-04-11T11:52:46.1731769Z #1 [internal] load build definition from Dockerfile
+2026-04-11T11:52:46.1732285Z #1 transferring dockerfile: 376B done
+2026-04-11T11:52:46.1732952Z #1 DONE 0.0s
+2026-04-11T11:52:46.1733249Z 
+2026-04-11T11:52:46.1733553Z #2 [auth] library/python:pull token for registry-1.docker.io
+2026-04-11T11:52:46.1734181Z #2 DONE 0.0s
+2026-04-11T11:52:46.1734350Z 
+2026-04-11T11:52:46.1734550Z #3 [internal] load metadata for docker.io/library/python:3.9
+2026-04-11T11:52:46.5142574Z #3 DONE 0.6s
+2026-04-11T11:52:46.6290710Z 
+2026-04-11T11:52:46.6291503Z #4 [internal] load .dockerignore
+2026-04-11T11:52:46.6292569Z #4 transferring context: 2B done
+2026-04-11T11:52:46.6293132Z #4 DONE 0.0s
+2026-04-11T11:52:46.6293409Z 
+2026-04-11T11:52:46.6294169Z #5 [1/5] FROM docker.io/library/python:3.9@sha256:da5aee29682d12a6649f51c8d6f15b87deb3e6c524b923c41d0cb3304d07c913
+2026-04-11T11:52:46.6295760Z #5 resolve docker.io/library/python:3.9@sha256:da5aee29682d12a6649f51c8d6f15b87deb3e6c524b923c41d0cb3304d07c913 done
+2026-04-11T11:52:46.7283917Z #5 sha256:d6ca7d9522a172c424721d3509ee12079f7864a742b6adf1eeb66b6c405307ee 2.32kB / 2.32kB done
+2026-04-11T11:52:46.7285622Z #5 sha256:bcd3da5974912584a81ed86fd944ab5fba9093ff1c9a0b0ed18349f9a69e4762 6.23kB / 6.23kB done
+2026-04-11T11:52:46.7287075Z #5 sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2 0B / 49.28MB 0.1s
+2026-04-11T11:52:46.7288462Z #5 sha256:da5aee29682d12a6649f51c8d6f15b87deb3e6c524b923c41d0cb3304d07c913 10.30kB / 10.30kB done
+2026-04-11T11:52:46.7290491Z #5 sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55 0B / 25.62MB 0.1s
+2026-04-11T11:52:46.7291909Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 0B / 67.78MB 0.1s
+2026-04-11T11:52:46.8371439Z #5 sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2 22.02MB / 49.28MB 0.3s
+2026-04-11T11:52:46.8388668Z #5 sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55 13.63MB / 25.62MB 0.3s
+2026-04-11T11:52:46.8400985Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 15.73MB / 67.78MB 0.3s
+2026-04-11T11:52:47.0342672Z #5 sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2 30.41MB / 49.28MB 0.4s
+2026-04-11T11:52:47.0344967Z #5 sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55 24.12MB / 25.62MB 0.4s
+2026-04-11T11:52:47.0370645Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 25.17MB / 67.78MB 0.4s
+2026-04-11T11:52:47.1351004Z #5 sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2 49.28MB / 49.28MB 0.6s done
+2026-04-11T11:52:47.1352445Z #5 sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55 25.62MB / 25.62MB 0.4s done
+2026-04-11T11:52:47.1360885Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 48.23MB / 67.78MB 0.6s
+2026-04-11T11:52:47.1362247Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 11.53MB / 235.93MB 0.6s
+2026-04-11T11:52:47.1363069Z #5 sha256:081ccf923272c30c6072c6ff1617d9072e03ab2a90a431951d325d45e296962b 0B / 6.10MB 0.6s
+2026-04-11T11:52:47.2449187Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 57.67MB / 67.78MB 0.7s
+2026-04-11T11:52:47.2450955Z #5 sha256:081ccf923272c30c6072c6ff1617d9072e03ab2a90a431951d325d45e296962b 2.10MB / 6.10MB 0.7s
+2026-04-11T11:52:47.2459318Z #5 extracting sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2
+2026-04-11T11:52:47.3480293Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 66.06MB / 67.78MB 0.8s
+2026-04-11T11:52:47.3482167Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 32.51MB / 235.93MB 0.8s
+2026-04-11T11:52:47.3483847Z #5 sha256:081ccf923272c30c6072c6ff1617d9072e03ab2a90a431951d325d45e296962b 6.10MB / 6.10MB 0.7s done
+2026-04-11T11:52:47.3485487Z #5 sha256:c9723aa529b03c40e66d0aee927a410b4719528ab865af6e0bac1b7c9b10829e 0B / 20.37MB 0.8s
+2026-04-11T11:52:47.5369299Z #5 sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 67.78MB / 67.78MB 0.8s done
+2026-04-11T11:52:47.5372278Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 47.19MB / 235.93MB 1.0s
+2026-04-11T11:52:47.5373712Z #5 sha256:c9723aa529b03c40e66d0aee927a410b4719528ab865af6e0bac1b7c9b10829e 20.37MB / 20.37MB 1.0s
+2026-04-11T11:52:47.5375277Z #5 sha256:91c91c91f1d23f4edf4280a8fe935f14340fec43a7a3576149a7cffcf70c2f9b 250B / 250B 0.9s done
+2026-04-11T11:52:47.6415069Z #5 sha256:c9723aa529b03c40e66d0aee927a410b4719528ab865af6e0bac1b7c9b10829e 20.37MB / 20.37MB 1.0s done
+2026-04-11T11:52:47.7453867Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 69.21MB / 235.93MB 1.2s
+2026-04-11T11:52:47.9342020Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 94.37MB / 235.93MB 1.4s
+2026-04-11T11:52:48.1493820Z #5 ...
+2026-04-11T11:52:48.1494196Z 
+2026-04-11T11:52:48.1494375Z #6 [internal] load build context
+2026-04-11T11:52:48.1494880Z #6 transferring context: 51.68MB 1.5s done
+2026-04-11T11:52:48.1495259Z #6 DONE 1.6s
+2026-04-11T11:52:48.1495431Z 
+2026-04-11T11:52:48.1496031Z #5 [1/5] FROM docker.io/library/python:3.9@sha256:da5aee29682d12a6649f51c8d6f15b87deb3e6c524b923c41d0cb3304d07c913
+2026-04-11T11:52:48.1497334Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 117.44MB / 235.93MB 1.6s
+2026-04-11T11:52:48.3339305Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 132.12MB / 235.93MB 1.8s
+2026-04-11T11:52:48.4341359Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 148.90MB / 235.93MB 1.9s
+2026-04-11T11:52:48.6341536Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 164.63MB / 235.93MB 2.1s
+2026-04-11T11:52:48.8690729Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 178.26MB / 235.93MB 2.3s
+2026-04-11T11:52:49.1341033Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 208.67MB / 235.93MB 2.6s
+2026-04-11T11:52:49.3710161Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 223.35MB / 235.93MB 2.8s
+2026-04-11T11:52:49.3712133Z #5 extracting sha256:795dbedde24d2c72dafd2b71fe36643552e56859c0e29cdb095ed54b825fbaa2 2.2s done
+2026-04-11T11:52:49.5347115Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 235.93MB / 235.93MB 3.0s
+2026-04-11T11:52:49.5347973Z #5 extracting sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55
+2026-04-11T11:52:49.7871929Z #5 sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 235.93MB / 235.93MB 3.2s done
+2026-04-11T11:52:50.4539922Z #5 extracting sha256:89d573bf42b377ce6a5a0451c15388849686fa4058efd68999f3b014daeb5b55 0.9s done
+2026-04-11T11:52:51.6157605Z #5 extracting sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13
+2026-04-11T11:52:53.9990003Z #5 extracting sha256:26dfe2fac1c486e9aaf41d1028ed30be2c442aa84af44462bc7bac8c148ffb13 2.2s done
+2026-04-11T11:52:54.1934759Z #5 extracting sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924
+2026-04-11T11:52:59.2364826Z #5 extracting sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 5.0s
+2026-04-11T11:53:00.5161591Z #5 extracting sha256:79d5bd8a8d262418bf22e705535ce38c6789dc72e319d76b30aafa5c331b6924 6.2s done
+2026-04-11T11:53:01.8492422Z #5 extracting sha256:081ccf923272c30c6072c6ff1617d9072e03ab2a90a431951d325d45e296962b
+2026-04-11T11:53:02.2394538Z #5 extracting sha256:081ccf923272c30c6072c6ff1617d9072e03ab2a90a431951d325d45e296962b 0.3s done
+2026-04-11T11:53:02.2396073Z #5 extracting sha256:c9723aa529b03c40e66d0aee927a410b4719528ab865af6e0bac1b7c9b10829e 0.1s
+2026-04-11T11:53:02.9139732Z #5 extracting sha256:c9723aa529b03c40e66d0aee927a410b4719528ab865af6e0bac1b7c9b10829e 0.7s done
+2026-04-11T11:53:02.9141230Z #5 extracting sha256:91c91c91f1d23f4edf4280a8fe935f14340fec43a7a3576149a7cffcf70c2f9b
+2026-04-11T11:53:03.1127558Z #5 extracting sha256:91c91c91f1d23f4edf4280a8fe935f14340fec43a7a3576149a7cffcf70c2f9b done
+2026-04-11T11:53:03.1128746Z #5 DONE 16.4s
+2026-04-11T11:53:03.1129050Z 
+2026-04-11T11:53:03.1129229Z #7 [2/5] WORKDIR /app
+2026-04-11T11:53:03.1129998Z #7 DONE 0.0s
+2026-04-11T11:53:03.1130335Z 
+2026-04-11T11:53:03.1130560Z #8 [3/5] COPY requirements.txt .
+2026-04-11T11:53:03.1131212Z #8 DONE 0.0s
+2026-04-11T11:53:03.1131458Z 
+2026-04-11T11:53:03.1131793Z #9 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+2026-04-11T11:53:04.7925556Z #9 1.830 Collecting django
+2026-04-11T11:53:04.9557311Z #9 1.849   Downloading django-4.2.30-py3-none-any.whl (8.0 MB)
+2026-04-11T11:53:04.9558969Z #9 1.908      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.0/8.0 MB 141.3 MB/s eta 0:00:00
+2026-04-11T11:53:04.9560604Z #9 1.994 Collecting djangorestframework
+2026-04-11T11:53:05.1647508Z #9 1.998   Downloading djangorestframework-3.16.1-py3-none-any.whl (1.1 MB)
+2026-04-11T11:53:05.1648407Z #9 2.006      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 193.7 MB/s eta 0:00:00
+2026-04-11T11:53:05.1648781Z #9 2.045 Collecting gunicorn
+2026-04-11T11:53:05.1649097Z #9 2.049   Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+2026-04-11T11:53:05.1649956Z #9 2.052      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.0/85.0 kB 227.3 MB/s eta 0:00:00
+2026-04-11T11:53:05.1980915Z #9 2.236 Collecting psycopg2-binary
+2026-04-11T11:53:05.3080779Z #9 2.240   Downloading psycopg2_binary-2.9.11-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+2026-04-11T11:53:05.3081804Z #9 2.265      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 186.1 MB/s eta 0:00:00
+2026-04-11T11:53:05.3082253Z #9 2.300 Collecting djangorestframework-simplejwt
+2026-04-11T11:53:05.3082787Z #9 2.304   Downloading djangorestframework_simplejwt-5.5.1-py3-none-any.whl (107 kB)
+2026-04-11T11:53:05.3083435Z #9 2.307      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 107.7/107.7 kB 218.3 MB/s eta 0:00:00
+2026-04-11T11:53:05.3083849Z #9 2.346 Collecting django-cors-headers
+2026-04-11T11:53:05.4637173Z #9 2.350   Downloading django_cors_headers-4.9.0-py3-none-any.whl (12 kB)
+2026-04-11T11:53:05.4637654Z #9 2.395 Collecting asgiref<4,>=3.6.0
+2026-04-11T11:53:05.4638006Z #9 2.399   Downloading asgiref-3.11.1-py3-none-any.whl (24 kB)
+2026-04-11T11:53:05.4638348Z #9 2.422 Collecting sqlparse>=0.3.1
+2026-04-11T11:53:05.4638670Z #9 2.426   Downloading sqlparse-0.5.5-py3-none-any.whl (46 kB)
+2026-04-11T11:53:05.4639357Z #9 2.428      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.1/46.1 kB 191.3 MB/s eta 0:00:00
+2026-04-11T11:53:05.4640402Z #9 2.502 Collecting packaging
+2026-04-11T11:53:05.5848244Z #9 2.506   Downloading packaging-26.0-py3-none-any.whl (74 kB)
+2026-04-11T11:53:05.5849511Z #9 2.508      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 74.4/74.4 kB 223.1 MB/s eta 0:00:00
+2026-04-11T11:53:05.5850493Z #9 2.568 Collecting pyjwt>=1.7.1
+2026-04-11T11:53:05.5851058Z #9 2.571   Downloading pyjwt-2.12.1-py3-none-any.whl (29 kB)
+2026-04-11T11:53:05.5851683Z #9 2.623 Collecting typing_extensions>=4
+2026-04-11T11:53:05.7420511Z #9 2.627   Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+2026-04-11T11:53:05.7421758Z #9 2.629      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.6/44.6 kB 191.7 MB/s eta 0:00:00
+2026-04-11T11:53:05.7675189Z #9 2.805 Installing collected packages: typing_extensions, sqlparse, psycopg2-binary, packaging, pyjwt, gunicorn, asgiref, django, djangorestframework, django-cors-headers, djangorestframework-simplejwt
+2026-04-11T11:53:08.1517126Z #9 5.189 Successfully installed asgiref-3.11.1 django-4.2.30 django-cors-headers-4.9.0 djangorestframework-3.16.1 djangorestframework-simplejwt-5.5.1 gunicorn-23.0.0 packaging-26.0 psycopg2-binary-2.9.11 pyjwt-2.12.1 sqlparse-0.5.5 typing_extensions-4.15.0
+2026-04-11T11:53:08.3946480Z #9 5.190 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+2026-04-11T11:53:08.3948498Z #9 5.282 
+2026-04-11T11:53:08.3948966Z #9 5.282 [notice] A new release of pip is available: 23.0.1 -> 26.0.1
+2026-04-11T11:53:08.3949859Z #9 5.282 [notice] To update, run: pip install --upgrade pip
+2026-04-11T11:53:08.4424975Z #9 DONE 5.5s
+2026-04-11T11:53:08.5934592Z 
+2026-04-11T11:53:08.5935112Z #10 [5/5] COPY . .
+2026-04-11T11:53:09.5463879Z #10 DONE 1.1s
+2026-04-11T11:53:09.6983039Z 
+2026-04-11T11:53:09.6984184Z #11 exporting to image
+2026-04-11T11:53:09.6985269Z #11 exporting layers
+2026-04-11T11:53:12.7533558Z #11 exporting layers 3.2s done
+2026-04-11T11:53:12.7708547Z #11 writing image sha256:5c3463c44d6ecb9811eb0fdf8fdda073edb958cdc7cc4369b1076c1c201f879c done
+2026-04-11T11:53:12.7710165Z #11 naming to docker.io/***/ssf-backend:latest done
+2026-04-11T11:53:12.7710561Z #11 DONE 3.2s
+
+
+--- FILE: build/5_Push Backend Image.txt ---
+﻿2026-04-11T11:53:12.7791139Z ##[group]Run docker push ***/ssf-backend:latest 2>&1 | tee -a backend.log
+2026-04-11T11:53:12.7791772Z [36;1mdocker push ***/ssf-backend:latest 2>&1 | tee -a backend.log[0m
+2026-04-11T11:53:12.7812919Z shell: /usr/bin/bash -e {0}
+2026-04-11T11:53:12.7813166Z ##[endgroup]
+2026-04-11T11:53:12.7968581Z The push refers to repository [docker.io/***/ssf-backend]
+2026-04-11T11:53:12.8557330Z ba4c98deaaff: Preparing
+2026-04-11T11:53:12.8558104Z aad06992bff1: Preparing
+2026-04-11T11:53:12.8558682Z 84533ec6b4d3: Preparing
+2026-04-11T11:53:12.8559140Z 53298ffbd430: Preparing
+2026-04-11T11:53:12.8559731Z 4e92062d58c4: Preparing
+2026-04-11T11:53:12.8559971Z 05c88577d350: Preparing
+2026-04-11T11:53:12.8560227Z 0b38a99061e1: Preparing
+2026-04-11T11:53:12.8560432Z 713ad1f34d94: Preparing
+2026-04-11T11:53:12.8560633Z c041ff8d6c73: Preparing
+2026-04-11T11:53:12.8560835Z fbde375eafc7: Preparing
+2026-04-11T11:53:12.8561036Z f2522c6ed78b: Preparing
+2026-04-11T11:53:12.8561226Z 0b38a99061e1: Waiting
+2026-04-11T11:53:12.8561410Z 713ad1f34d94: Waiting
+2026-04-11T11:53:12.8561656Z c041ff8d6c73: Waiting
+2026-04-11T11:53:12.8561846Z fbde375eafc7: Waiting
+2026-04-11T11:53:12.8562028Z f2522c6ed78b: Waiting
+2026-04-11T11:53:12.8562206Z 05c88577d350: Waiting
+2026-04-11T11:53:13.0024808Z 4e92062d58c4: Layer already exists
+2026-04-11T11:53:13.0761658Z 05c88577d350: Layer already exists
+2026-04-11T11:53:13.1408424Z 0b38a99061e1: Layer already exists
+2026-04-11T11:53:13.2052678Z 713ad1f34d94: Layer already exists
+2026-04-11T11:53:13.2727360Z c041ff8d6c73: Layer already exists
+2026-04-11T11:53:13.3406540Z fbde375eafc7: Layer already exists
+2026-04-11T11:53:13.4110352Z f2522c6ed78b: Layer already exists
+2026-04-11T11:53:13.9761908Z 53298ffbd430: Pushed
+2026-04-11T11:53:14.0636334Z 84533ec6b4d3: Pushed
+2026-04-11T11:53:16.6209896Z aad06992bff1: Pushed
+2026-04-11T11:53:16.7055273Z ba4c98deaaff: Pushed
+2026-04-11T11:53:19.5150470Z latest: digest: sha256:23e4f873626095b42f9e77806beba78c74d0d556b7eef5962419e24a3a305f0c size: 2633
+
+
+--- FILE: build/6_Build Frontend Image.txt ---
+﻿2026-04-11T11:53:19.5202259Z ##[group]Run docker build -t ***/ssf-frontend:latest ./frontend 2>&1 | tee frontend.log
+2026-04-11T11:53:19.5202972Z [36;1mdocker build -t ***/ssf-frontend:latest ./frontend 2>&1 | tee frontend.log[0m
+2026-04-11T11:53:19.5223555Z shell: /usr/bin/bash -e {0}
+2026-04-11T11:53:19.5223799Z ##[endgroup]
+2026-04-11T11:53:19.8568034Z #0 building with "default" instance using docker driver
+2026-04-11T11:53:19.8568823Z 
+2026-04-11T11:53:19.8569262Z #1 [internal] load build definition from Dockerfile
+2026-04-11T11:53:19.8570129Z #1 transferring dockerfile: 396B done
+2026-04-11T11:53:19.8570420Z #1 DONE 0.0s
+2026-04-11T11:53:19.8570539Z 
+2026-04-11T11:53:19.8570706Z #2 [auth] library/node:pull token for registry-1.docker.io
+2026-04-11T11:53:19.8571062Z #2 DONE 0.0s
+2026-04-11T11:53:19.8571180Z 
+2026-04-11T11:53:19.8571337Z #3 [internal] load metadata for docker.io/library/node:18
+2026-04-11T11:53:20.1467027Z #3 DONE 0.5s
+2026-04-11T11:53:20.2645436Z 
+2026-04-11T11:53:20.2645837Z #4 [internal] load .dockerignore
+2026-04-11T11:53:20.2646440Z #4 transferring context: 2B done
+2026-04-11T11:53:20.2646959Z #4 DONE 0.0s
+2026-04-11T11:53:20.2647146Z 
+2026-04-11T11:53:20.2647313Z #5 [internal] load build context
+2026-04-11T11:53:20.2647616Z #5 transferring context: 7.17MB 0.0s done
+2026-04-11T11:53:20.2647878Z #5 DONE 0.1s
+2026-04-11T11:53:20.2647984Z 
+2026-04-11T11:53:20.2648338Z #6 [1/5] FROM docker.io/library/node:18@sha256:c6ae79e38498325db67193d391e6ec1d224d96c693a8a4d943498556716d3783
+2026-04-11T11:53:20.2649136Z #6 resolve docker.io/library/node:18@sha256:c6ae79e38498325db67193d391e6ec1d224d96c693a8a4d943498556716d3783 done
+2026-04-11T11:53:20.2650181Z #6 sha256:eb29363371ee2859fad6a3c5af88d4abc6ff7d399addb13b7de3c1f11bdee6b9 2.49kB / 2.49kB done
+2026-04-11T11:53:20.2650853Z #6 sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 0B / 48.49MB 0.1s
+2026-04-11T11:53:20.2651500Z #6 sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 0B / 24.02MB 0.1s
+2026-04-11T11:53:20.2652130Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 0B / 64.40MB 0.1s
+2026-04-11T11:53:20.2653069Z #6 sha256:c6ae79e38498325db67193d391e6ec1d224d96c693a8a4d943498556716d3783 6.41kB / 6.41kB done
+2026-04-11T11:53:20.2653761Z #6 sha256:b50082bc3670d0396b2d90e4b0e5bb10265ba5d0ee16bf40f9a505f7045ee563 6.39kB / 6.39kB done
+2026-04-11T11:53:20.3648543Z #6 sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 9.44MB / 24.02MB 0.2s
+2026-04-11T11:53:20.4653987Z #6 sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 12.58MB / 48.49MB 0.3s
+2026-04-11T11:53:20.4655183Z #6 sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 16.78MB / 24.02MB 0.3s
+2026-04-11T11:53:20.4656195Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 10.49MB / 64.40MB 0.3s
+2026-04-11T11:53:20.5658516Z #6 sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 23.07MB / 48.49MB 0.4s
+2026-04-11T11:53:20.5660160Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 17.83MB / 64.40MB 0.4s
+2026-04-11T11:53:20.6666401Z #6 sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 38.80MB / 48.49MB 0.5s
+2026-04-11T11:53:20.6667514Z #6 sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 19.92MB / 24.02MB 0.5s
+2026-04-11T11:53:20.6668530Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 27.26MB / 64.40MB 0.5s
+2026-04-11T11:53:20.7830126Z #6 sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 48.49MB / 48.49MB 0.6s done
+2026-04-11T11:53:20.7832081Z #6 sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 24.02MB / 24.02MB 0.5s done
+2026-04-11T11:53:20.7833832Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 39.85MB / 64.40MB 0.6s
+2026-04-11T11:53:20.7835049Z #6 sha256:cda7f44f2bddcc4bb7514474024b3f3705de00ddb6355a33be5ac7808e5b7125 0B / 3.32kB 0.6s
+2026-04-11T11:53:20.7836173Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 0B / 211.36MB 0.6s
+2026-04-11T11:53:20.7837397Z #6 extracting sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964
+2026-04-11T11:53:20.8884121Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 49.28MB / 64.40MB 0.7s
+2026-04-11T11:53:20.8886372Z #6 sha256:cda7f44f2bddcc4bb7514474024b3f3705de00ddb6355a33be5ac7808e5b7125 3.32kB / 3.32kB 0.7s done
+2026-04-11T11:53:20.8888304Z #6 sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 0B / 45.68MB 0.7s
+2026-04-11T11:53:21.0048838Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 60.82MB / 64.40MB 0.8s
+2026-04-11T11:53:21.0050421Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 16.78MB / 211.36MB 0.8s
+2026-04-11T11:53:21.1091311Z #6 sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 64.40MB / 64.40MB 0.8s done
+2026-04-11T11:53:21.1092111Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 30.41MB / 211.36MB 0.9s
+2026-04-11T11:53:21.1092765Z #6 sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 10.49MB / 45.68MB 0.9s
+2026-04-11T11:53:21.1093615Z #6 sha256:3697be50c98b9d071df4637e1d3491d00e7b9f3a732768c876d82309b3c5a145 0B / 1.25MB 0.9s
+2026-04-11T11:53:21.2137402Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 42.99MB / 211.36MB 1.0s
+2026-04-11T11:53:21.2138143Z #6 sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 20.97MB / 45.68MB 1.0s
+2026-04-11T11:53:21.2139309Z #6 sha256:3697be50c98b9d071df4637e1d3491d00e7b9f3a732768c876d82309b3c5a145 1.25MB / 1.25MB 1.0s done
+2026-04-11T11:53:21.2140433Z #6 sha256:461077a72fb7fe40d34a37d6a1958c4d16772d0dd77f572ec50a1fdc41a3754d 0B / 446B 1.0s
+2026-04-11T11:53:21.3648281Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 66.06MB / 211.36MB 1.2s
+2026-04-11T11:53:21.3649943Z #6 sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 40.89MB / 45.68MB 1.2s
+2026-04-11T11:53:21.3651210Z #6 sha256:461077a72fb7fe40d34a37d6a1958c4d16772d0dd77f572ec50a1fdc41a3754d 446B / 446B 1.1s done
+2026-04-11T11:53:21.4777696Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 79.69MB / 211.36MB 1.3s
+2026-04-11T11:53:21.4779023Z #6 sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 45.68MB / 45.68MB 1.3s done
+2026-04-11T11:53:21.7145833Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 100.66MB / 211.36MB 1.5s
+2026-04-11T11:53:21.8162572Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 114.29MB / 211.36MB 1.6s
+2026-04-11T11:53:21.9282449Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 131.07MB / 211.36MB 1.7s
+2026-04-11T11:53:22.0360966Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 142.61MB / 211.36MB 1.8s
+2026-04-11T11:53:22.1644584Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 157.29MB / 211.36MB 2.0s
+2026-04-11T11:53:22.4651255Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 193.99MB / 211.36MB 2.3s
+2026-04-11T11:53:22.5781319Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 206.57MB / 211.36MB 2.4s
+2026-04-11T11:53:22.7002439Z #6 extracting sha256:3e6b9d1a95114e19f12262a4e8a59ad1d1a10ca7b82108adcf0605a200294964 1.9s done
+2026-04-11T11:53:22.8643253Z #6 sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 211.36MB / 211.36MB 2.7s done
+2026-04-11T11:53:22.9824688Z #6 extracting sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 0.1s
+2026-04-11T11:53:23.5271605Z #6 extracting sha256:37927ed901b1b2608b72796c6881bf645480268eca4ac9a37b9219e050bb4d84 0.5s done
+2026-04-11T11:53:23.6109938Z #6 extracting sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0
+2026-04-11T11:53:25.8446459Z #6 extracting sha256:79b2f47ad4443652b9b5cc81a95ede249fd976310efdbee159f29638783778c0 2.1s done
+2026-04-11T11:53:26.0048337Z #6 extracting sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab
+2026-04-11T11:53:31.1215267Z #6 extracting sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 5.1s
+2026-04-11T11:53:31.3456440Z #6 extracting sha256:e23f099911d692f62b851cf49a1e93294288a115f5cd2d014180e4d3684d34ab 5.2s done
+2026-04-11T11:53:32.5116313Z #6 extracting sha256:cda7f44f2bddcc4bb7514474024b3f3705de00ddb6355a33be5ac7808e5b7125
+2026-04-11T11:53:32.6408096Z #6 extracting sha256:cda7f44f2bddcc4bb7514474024b3f3705de00ddb6355a33be5ac7808e5b7125 done
+2026-04-11T11:53:32.6410090Z #6 extracting sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 0.1s
+2026-04-11T11:53:34.3554490Z #6 extracting sha256:c6b30c3f16966552af10ac00521f60355b1fcfd46ac1c20b1038587e28583ce7 1.7s done
+2026-04-11T11:53:34.4444491Z #6 extracting sha256:3697be50c98b9d071df4637e1d3491d00e7b9f3a732768c876d82309b3c5a145
+2026-04-11T11:53:34.6773939Z #6 extracting sha256:3697be50c98b9d071df4637e1d3491d00e7b9f3a732768c876d82309b3c5a145 0.0s done
+2026-04-11T11:53:34.6775466Z #6 extracting sha256:461077a72fb7fe40d34a37d6a1958c4d16772d0dd77f572ec50a1fdc41a3754d done
+2026-04-11T11:53:34.6776104Z #6 DONE 14.4s
+2026-04-11T11:53:34.6776262Z 
+2026-04-11T11:53:34.6776365Z #7 [2/5] WORKDIR /app
+2026-04-11T11:53:34.6776628Z #7 DONE 0.0s
+2026-04-11T11:53:34.6776765Z 
+2026-04-11T11:53:34.6776902Z #8 [3/5] COPY package*.json ./
+2026-04-11T11:53:34.6777200Z #8 DONE 0.0s
+2026-04-11T11:53:34.6777329Z 
+2026-04-11T11:53:34.6777435Z #9 [4/5] RUN npm install
+2026-04-11T11:53:39.2463384Z #9 4.719 npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+2026-04-11T11:53:39.7218784Z #9 5.194 npm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
+2026-04-11T11:53:39.9078792Z #9 5.259 npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+2026-04-11T11:53:39.9080241Z #9 5.381 npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-04-11T11:53:40.0807349Z #9 5.430 npm warn deprecated rollup-plugin-terser@7.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+2026-04-11T11:53:40.0808370Z #9 5.553 npm warn deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
+2026-04-11T11:53:40.3033506Z #9 5.775 npm warn deprecated workbox-google-analytics@6.6.0: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
+2026-04-11T11:53:40.4586150Z #9 5.781 npm warn deprecated q@1.5.1: You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+2026-04-11T11:53:40.4588444Z #9 5.781 npm warn deprecated
+2026-04-11T11:53:40.4589172Z #9 5.781 npm warn deprecated (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
+2026-04-11T11:53:41.5871350Z #9 7.060 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-04-11T11:53:41.9014798Z #9 7.374 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2026-04-11T11:53:42.3388777Z #9 7.811 npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+2026-04-11T11:53:42.9965931Z #9 8.469 npm warn deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+2026-04-11T11:53:43.2046366Z #9 8.527 npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+2026-04-11T11:53:43.7402109Z #9 9.213 npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+2026-04-11T11:53:43.9162076Z #9 9.237 npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+2026-04-11T11:53:44.3901790Z #9 9.862 npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+2026-04-11T11:53:44.5755606Z #9 9.863 npm warn deprecated @babel/plugin-proposal-numeric-separator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-numeric-separator instead.
+2026-04-11T11:53:44.5759194Z #9 9.863 npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+2026-04-11T11:53:44.5763047Z #9 9.865 npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+2026-04-11T11:53:44.5766170Z #9 9.898 npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+2026-04-11T11:53:53.5183365Z #9 18.99 
+2026-04-11T11:53:53.5184026Z #9 18.99 added 1557 packages, and audited 1558 packages in 19s
+2026-04-11T11:53:53.5184504Z #9 18.99 
+2026-04-11T11:53:53.5184772Z #9 18.99 266 packages are looking for funding
+2026-04-11T11:53:53.5185223Z #9 18.99   run `npm fund` for details
+2026-04-11T11:53:53.7548602Z #9 19.08 
+2026-04-11T11:53:53.7549186Z #9 19.08 55 vulnerabilities (14 low, 11 moderate, 28 high, 2 critical)
+2026-04-11T11:53:53.7549930Z #9 19.08 
+2026-04-11T11:53:53.7550199Z #9 19.08 To address issues that do not require attention, run:
+2026-04-11T11:53:53.7550555Z #9 19.08   npm audit fix
+2026-04-11T11:53:53.7550765Z #9 19.08 
+2026-04-11T11:53:53.7551022Z #9 19.08 To address all issues (including breaking changes), run:
+2026-04-11T11:53:53.7551385Z #9 19.08   npm audit fix --force
+2026-04-11T11:53:53.7551635Z #9 19.08 
+2026-04-11T11:53:53.7551828Z #9 19.08 Run `npm audit` for details.
+2026-04-11T11:53:53.7552103Z #9 19.08 npm notice
+2026-04-11T11:53:53.7552418Z #9 19.08 npm notice New major version of npm available! 10.8.2 -> 11.12.1
+2026-04-11T11:53:53.7552956Z #9 19.08 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+2026-04-11T11:53:53.7553446Z #9 19.08 npm notice To update run: npm install -g npm@11.12.1
+2026-04-11T11:53:53.7553800Z #9 19.08 npm notice
+2026-04-11T11:53:54.2439236Z #9 DONE 19.7s
+2026-04-11T11:53:54.4364601Z 
+2026-04-11T11:53:54.4365053Z #10 [5/5] COPY . .
+2026-04-11T11:53:54.4365999Z #10 DONE 0.0s
+2026-04-11T11:53:54.4368514Z 
+2026-04-11T11:53:54.4369494Z #11 exporting to image
+2026-04-11T11:53:54.4371756Z #11 exporting layers
+2026-04-11T11:54:01.7153192Z #11 exporting layers 7.4s done
+2026-04-11T11:54:01.7334486Z #11 writing image sha256:b0b68299e62c825177988d0377c5558555daf8679f318abc3bd8b30fccf8041c done
+2026-04-11T11:54:01.7337160Z #11 naming to docker.io/***/ssf-frontend:latest done
+2026-04-11T11:54:01.7338205Z #11 DONE 7.4s
+
+
+--- FILE: build/7_Push Frontend Image.txt ---
+﻿2026-04-11T11:54:01.7416478Z ##[group]Run docker push ***/ssf-frontend:latest 2>&1 | tee -a frontend.log
+2026-04-11T11:54:01.7417090Z [36;1mdocker push ***/ssf-frontend:latest 2>&1 | tee -a frontend.log[0m
+2026-04-11T11:54:01.7437948Z shell: /usr/bin/bash -e {0}
+2026-04-11T11:54:01.7438193Z ##[endgroup]
+2026-04-11T11:54:01.7584523Z The push refers to repository [docker.io/***/ssf-frontend]
+2026-04-11T11:54:01.8203810Z 30bff2e938d1: Preparing
+2026-04-11T11:54:01.8204216Z 051d7f2fa903: Preparing
+2026-04-11T11:54:01.8204578Z 64671fcb389a: Preparing
+2026-04-11T11:54:01.8204905Z 0771b42e1179: Preparing
+2026-04-11T11:54:01.8205245Z d2a991bcab4d: Preparing
+2026-04-11T11:54:01.8205582Z b624aa2d5ea2: Preparing
+2026-04-11T11:54:01.8205918Z d399c9dc306f: Preparing
+2026-04-11T11:54:01.8206246Z 84f9fa179c1b: Preparing
+2026-04-11T11:54:01.8206571Z ce84ba212e49: Preparing
+2026-04-11T11:54:01.8206905Z e4dc8cd9ecc8: Preparing
+2026-04-11T11:54:01.8207235Z 6428cc293366: Preparing
+2026-04-11T11:54:01.8207547Z 2f7436e79a0b: Preparing
+2026-04-11T11:54:01.8207955Z 84f9fa179c1b: Waiting
+2026-04-11T11:54:01.8208198Z 6428cc293366: Waiting
+2026-04-11T11:54:01.8208400Z 2f7436e79a0b: Waiting
+2026-04-11T11:54:01.8208596Z ce84ba212e49: Waiting
+2026-04-11T11:54:01.8208799Z e4dc8cd9ecc8: Waiting
+2026-04-11T11:54:01.8209082Z b624aa2d5ea2: Waiting
+2026-04-11T11:54:01.8209328Z d399c9dc306f: Waiting
+2026-04-11T11:54:01.9658226Z d2a991bcab4d: Layer already exists
+2026-04-11T11:54:02.0387187Z b624aa2d5ea2: Layer already exists
+2026-04-11T11:54:02.1027821Z d399c9dc306f: Layer already exists
+2026-04-11T11:54:02.1677837Z 84f9fa179c1b: Layer already exists
+2026-04-11T11:54:02.2407138Z ce84ba212e49: Layer already exists
+2026-04-11T11:54:02.3078060Z e4dc8cd9ecc8: Layer already exists
+2026-04-11T11:54:02.3749300Z 6428cc293366: Layer already exists
+2026-04-11T11:54:02.4352005Z 2f7436e79a0b: Layer already exists
+2026-04-11T11:54:03.0238098Z 64671fcb389a: Pushed
+2026-04-11T11:54:03.0441008Z 0771b42e1179: Pushed
+2026-04-11T11:54:03.3056185Z 30bff2e938d1: Pushed
+2026-04-11T11:54:16.6672623Z 051d7f2fa903: Pushed
+2026-04-11T11:54:19.5535855Z latest: digest: sha256:3b7eeed12deec474a8444b8e8586cea30dff7ce8a24fcb33982e799ad1439ef7 size: 2844
+
+
+--- FILE: build/system.txt ---
+2026-04-11T11:52:38.6850000Z Requested labels: ubuntu-latest
+2026-04-11T11:52:38.6850000Z Job defined at: VarunChavda78/SSF/.github/workflows/ci.yml@refs/heads/main
+2026-04-11T11:52:38.6850000Z Waiting for a runner to pick up this job...
+2026-04-11T11:52:38.6830000Z Evaluating build.if
+2026-04-11T11:52:38.6830000Z Evaluating: success()
+2026-04-11T11:52:38.6830000Z Result: true
+2026-04-11T11:52:38.9870000Z Job is waiting for a hosted runner to come online.
+2026-04-11T11:52:38.9870000Z Job is about to start running on the hosted runner: GitHub Actions 1000000455

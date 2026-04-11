@@ -1,0 +1,129 @@
+--- FILE: build/1_Set up job.txt ---
+﻿2026-04-11T07:00:12.6342718Z Current runner version: '2.333.1'
+2026-04-11T07:00:12.6378799Z ##[group]Runner Image Provisioner
+2026-04-11T07:00:12.6380115Z Hosted Compute Agent
+2026-04-11T07:00:12.6381117Z Version: 20260213.493
+2026-04-11T07:00:12.6381989Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-04-11T07:00:12.6383115Z Build Date: 2026-02-13T00:28:41Z
+2026-04-11T07:00:12.6384148Z Worker ID: {03c94d5a-bdca-4a9c-9f74-37477b1345bf}
+2026-04-11T07:00:12.6385125Z Azure Region: eastus
+2026-04-11T07:00:12.6386306Z ##[endgroup]
+2026-04-11T07:00:12.6388999Z ##[group]Operating System
+2026-04-11T07:00:12.6389841Z Ubuntu
+2026-04-11T07:00:12.6390701Z 24.04.4
+2026-04-11T07:00:12.6391412Z LTS
+2026-04-11T07:00:12.6392064Z ##[endgroup]
+2026-04-11T07:00:12.6393006Z ##[group]Runner Image
+2026-04-11T07:00:12.6393864Z Image: ubuntu-24.04
+2026-04-11T07:00:12.6394726Z Version: 20260406.80.1
+2026-04-11T07:00:12.6396529Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260406.80/images/ubuntu/Ubuntu2404-Readme.md
+2026-04-11T07:00:12.6399299Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260406.80
+2026-04-11T07:00:12.6400678Z ##[endgroup]
+2026-04-11T07:00:12.6402342Z ##[group]GITHUB_TOKEN Permissions
+2026-04-11T07:00:12.6405030Z Contents: read
+2026-04-11T07:00:12.6406111Z Metadata: read
+2026-04-11T07:00:12.6406985Z ##[endgroup]
+2026-04-11T07:00:12.6409988Z Secret source: Actions
+2026-04-11T07:00:12.6411911Z Prepare workflow directory
+2026-04-11T07:00:12.6881256Z Prepare all required actions
+2026-04-11T07:00:12.6938559Z Getting action download info
+2026-04-11T07:00:12.9348563Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-11T07:00:13.0730493Z Download action repository 'docker/login-action@v3' (SHA:c94ce9fb468520275223c153574b00df6fe4bcc9)
+2026-04-11T07:00:13.4913049Z Complete job name: build
+
+
+--- FILE: build/2_Checkout code.txt ---
+﻿2026-04-11T07:00:13.5614511Z ##[group]Run actions/checkout@v4
+2026-04-11T07:00:13.5615488Z with:
+2026-04-11T07:00:13.5615904Z   repository: VarunChavda78/SSF
+2026-04-11T07:00:13.5616594Z   token: ***
+2026-04-11T07:00:13.5617008Z   ssh-strict: true
+2026-04-11T07:00:13.5617418Z   ssh-user: git
+2026-04-11T07:00:13.5617823Z   persist-credentials: true
+2026-04-11T07:00:13.5618280Z   clean: true
+2026-04-11T07:00:13.5618700Z   sparse-checkout-cone-mode: true
+2026-04-11T07:00:13.5619183Z   fetch-depth: 1
+2026-04-11T07:00:13.5619567Z   fetch-tags: false
+2026-04-11T07:00:13.5619970Z   show-progress: true
+2026-04-11T07:00:13.5620372Z   lfs: false
+2026-04-11T07:00:13.5620745Z   submodules: false
+2026-04-11T07:00:13.5621156Z   set-safe-directory: true
+2026-04-11T07:00:13.5621830Z ##[endgroup]
+2026-04-11T07:00:13.6748230Z Syncing repository: VarunChavda78/SSF
+2026-04-11T07:00:13.6750145Z ##[group]Getting Git version info
+2026-04-11T07:00:13.6750749Z Working directory is '/home/runner/work/SSF/SSF'
+2026-04-11T07:00:13.6751629Z [command]/usr/bin/git version
+2026-04-11T07:00:13.6793975Z git version 2.53.0
+2026-04-11T07:00:13.6820081Z ##[endgroup]
+2026-04-11T07:00:13.6837104Z Temporarily overriding HOME='/home/runner/work/_temp/d97a4314-fa2e-4348-b131-25b470de6e3d' before making global git config changes
+2026-04-11T07:00:13.6839302Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-11T07:00:13.6852695Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SSF/SSF
+2026-04-11T07:00:13.6893300Z Deleting the contents of '/home/runner/work/SSF/SSF'
+2026-04-11T07:00:13.6897438Z ##[group]Initializing the repository
+2026-04-11T07:00:13.6901650Z [command]/usr/bin/git init /home/runner/work/SSF/SSF
+2026-04-11T07:00:13.6974820Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-04-11T07:00:13.6978236Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-04-11T07:00:13.6980059Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-04-11T07:00:13.6984082Z hint: call:
+2026-04-11T07:00:13.6984910Z hint:
+2026-04-11T07:00:13.6986221Z hint: 	git config --global init.defaultBranch <name>
+2026-04-11T07:00:13.6987688Z hint:
+2026-04-11T07:00:13.6988715Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-04-11T07:00:13.6993903Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-04-11T07:00:13.6995079Z hint:
+2026-04-11T07:00:13.6996248Z hint: 	git branch -m <name>
+2026-04-11T07:00:13.6997021Z hint:
+2026-04-11T07:00:13.6997930Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-04-11T07:00:13.6999298Z Initialized empty Git repository in /home/runner/work/SSF/SSF/.git/
+2026-04-11T07:00:13.7001558Z [command]/usr/bin/git remote add origin https://github.com/VarunChavda78/SSF
+2026-04-11T07:00:13.7031518Z ##[endgroup]
+2026-04-11T07:00:13.7032643Z ##[group]Disabling automatic garbage collection
+2026-04-11T07:00:13.7036061Z [command]/usr/bin/git config --local gc.auto 0
+2026-04-11T07:00:13.7067094Z ##[endgroup]
+2026-04-11T07:00:13.7068232Z ##[group]Setting up auth
+2026-04-11T07:00:13.7074827Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-04-11T07:00:13.7109605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-04-11T07:00:13.7411466Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-11T07:00:13.7443013Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-04-11T07:00:13.7670746Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-11T07:00:13.7702911Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-04-11T07:00:13.7949741Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-04-11T07:00:13.7986093Z ##[endgroup]
+2026-04-11T07:00:13.7986840Z ##[group]Fetching the repository
+2026-04-11T07:00:13.7994344Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b7baa392e914d72df54c09e016fa7535373ad574:refs/remotes/origin/main
+2026-04-11T07:00:14.5189585Z From https://github.com/VarunChavda78/SSF
+2026-04-11T07:00:14.5191368Z  * [new ref]         b7baa392e914d72df54c09e016fa7535373ad574 -> origin/main
+2026-04-11T07:00:14.5222275Z ##[endgroup]
+2026-04-11T07:00:14.5223447Z ##[group]Determining the checkout info
+2026-04-11T07:00:14.5224720Z ##[endgroup]
+2026-04-11T07:00:14.5229889Z [command]/usr/bin/git sparse-checkout disable
+2026-04-11T07:00:14.5270478Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-04-11T07:00:14.5301983Z ##[group]Checking out the ref
+2026-04-11T07:00:14.5306041Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-04-11T07:00:15.1040901Z Switched to a new branch 'main'
+2026-04-11T07:00:15.1042246Z branch 'main' set up to track 'origin/main'.
+2026-04-11T07:00:15.1096183Z ##[endgroup]
+2026-04-11T07:00:15.1099421Z [command]/usr/bin/git log -1 --format=%H
+2026-04-11T07:00:15.1123334Z b7baa392e914d72df54c09e016fa7535373ad574
+
+
+--- FILE: build/3_Login to Docker Hub.txt ---
+﻿2026-04-11T07:00:15.1398479Z ##[group]Run docker/login-action@v3
+2026-04-11T07:00:15.1399656Z with:
+2026-04-11T07:00:15.1400835Z   username: ***
+2026-04-11T07:00:15.1401749Z   password: ***
+2026-04-11T07:00:15.1402622Z   logout: true
+2026-04-11T07:00:15.1403481Z ##[endgroup]
+2026-04-11T07:00:15.4470654Z Logging into docker.io...
+2026-04-11T07:00:15.5705127Z ##[error]Error response from daemon: Get "https://registry-1.docker.io/v2/": unauthorized: incorrect username or password
+
+
+--- FILE: build/system.txt ---
+2026-04-11T07:00:10.4640000Z Requested labels: ubuntu-latest
+2026-04-11T07:00:10.4640000Z Job defined at: VarunChavda78/SSF/.github/workflows/ci.yml@refs/heads/main
+2026-04-11T07:00:10.4640000Z Waiting for a runner to pick up this job...
+2026-04-11T07:00:10.4630000Z Evaluating build.if
+2026-04-11T07:00:10.4630000Z Evaluating: success()
+2026-04-11T07:00:10.4630000Z Result: true
+2026-04-11T07:00:10.7650000Z Job is about to start running on the hosted runner: GitHub Actions 1000000451
+2026-04-11T07:00:10.7650000Z Job is waiting for a hosted runner to come online.

@@ -1,15 +1,30 @@
 import os
-import time
+import asyncio
+import json
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import StreamingResponse
 from mcp_server import mcp
 import google.generativeai as genai
-import json
 from github_client import fetch_workflow_logs
 from config import GOOGLE_API_KEY, SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV
+from workflow_state import workflows, emit_event, subscribe, unsubscribe
 
 app = FastAPI(title="MCP DevOps Webhook")
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Serve frontend static files
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 # Initialize Gemini
 if GOOGLE_API_KEY:
@@ -25,25 +40,71 @@ ANALYSIS_DIR = "analysis"
 os.makedirs(LOG_DIR, exist_ok=True)
 os.makedirs(ANALYSIS_DIR, exist_ok=True)
 
+
+# ── SSE Streaming Endpoint ─────────────────────────
+
+@app.get("/api/stream")
+async def event_stream():
+    queue = await subscribe()
+
+    async def generate():
+        try:
+            while True:
+                data = await queue.get()
+                yield f"data: {json.dumps(data, default=str)}\n\n"
+        except asyncio.CancelledError:
+            await unsubscribe(queue)
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+# ── Dashboard & API Endpoints ──────────────────────
+
+@app.get("/dashboard")
+async def dashboard():
+    return FileResponse("frontend/index.html")
+
+
+@app.get("/api/workflows")
+async def get_workflows():
+    return workflows
+
+
+@app.get("/api/workflows/{run_id}")
+async def get_workflow(run_id: str):
+    wf = workflows.get(run_id)
+    if not wf:
+        return JSONResponse(status_code=404, content={"error": "Workflow not found"})
+    return wf
+
+
+# ── Agent Workflow (instrumented with events) ──────
+
 async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, logs_content: str):
     """
-    The 'Brain' of the MCP Server. 
+    The 'Brain' of the MCP Server.
     Decides which tools to call based on the failure context.
     """
     if status != "failure":
         print(f"Skipping agent workflow for successful run: {run_id}")
+        await emit_event(run_id, "SKIPPED", {"reason": "non-failure status"})
         return
 
     print(f" Agent starting analysis for {repo} (Run: {run_id})")
-    
-    # 1. First, get the analysis from our specialized tool/logic
-    # We can use the existing analyze_logs, but let's make it agentic
+
+    # ── Step: Analyzing with LLM ──
+    await emit_event(run_id, "ANALYZING_LLM", {})
+
     prompt = f"""
     A CI/CD pipeline failed in repo '{repo}' on branch '{branch}'.
-    
+
     LOGS:
     {logs_content[:]}
-    
+
     TEAM MEMBERS:
     - Varun Chavda (DevOps): {SLACK_ID_VARUN}
     - Manav Thakkar (Frontend): {SLACK_ID_MANAV}
@@ -79,47 +140,78 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
 
     try:
         if not model:
-            print("❌ Gemini model not initialized.")
+            print("Gemini model not initialized.")
+            await emit_event(run_id, "ERROR", {"error": "Gemini model not initialized"})
             return
 
-        response = model.generate_content(prompt)
+        # Run blocking Gemini call in a thread to avoid blocking the event loop
+        response = await asyncio.to_thread(model.generate_content, prompt)
         content = response.text
-        
-        # Basic JSON extraction (naive)
+
+        # Basic JSON extraction
         start = content.find('{')
         end = content.rfind('}') + 1
         decision = json.loads(content[start:end])
-        
+
         print(f" Agent Decision: {decision.get('analysis')}")
+
+        # ── Step: LLM Complete ──
+        await emit_event(run_id, "LLM_COMPLETE", {"analysis": decision.get("analysis")})
 
         # Persistence: Save analysis
         analysis_path = os.path.join(ANALYSIS_DIR, f"{run_id}_analysis.json")
         with open(analysis_path, "w") as f:
             json.dump(decision, f, indent=4)
 
-        # Execute Tools
+        # ── Step: Tools Planned ──
+        planned_tools = [t["name"] for t in decision.get("tools", [])]
+        await emit_event(run_id, "TOOLS_PLANNED", {"tools": planned_tools})
+
+        # ── Execute Tools ──
         for tool_call in decision.get("tools", []):
             tool_name = tool_call["name"]
             tool_args = tool_call["args"]
-            
+
+            # Map tool name to step names
+            step_map = {
+                "send_slack_notification": ("SENDING_SLACK", "SLACK_DONE"),
+                "update_tracking_sheet": ("UPDATING_SHEET", "SHEET_DONE"),
+                "create_jira_issue": ("CREATING_JIRA", "JIRA_DONE"),
+            }
+
+            start_step, done_step = step_map.get(tool_name, (f"RUNNING_{tool_name.upper()}", f"{tool_name.upper()}_DONE"))
+
+            # Emit "starting" event
             print(f" Executing MCP Tool: {tool_name}")
-            
-            # Use the MCP server's internal dispatch or direct call for simplicity
+            await emit_event(run_id, start_step, {"tool": tool_name})
+
+            # Execute the tool in a thread (they do blocking HTTP calls)
+            result = None
             if tool_name == "create_jira_issue":
                 from mcp_server import create_jira_issue
-                create_jira_issue(**tool_args)
+                result = await asyncio.to_thread(create_jira_issue, **tool_args)
             elif tool_name == "send_slack_notification":
                 from mcp_server import send_slack_notification
-                send_slack_notification(**tool_args)
+                result = await asyncio.to_thread(send_slack_notification, **tool_args)
             elif tool_name == "update_tracking_sheet":
                 from mcp_server import update_tracking_sheet
-                update_tracking_sheet(**tool_args)
+                result = await asyncio.to_thread(update_tracking_sheet, **tool_args)
+
+            # Emit "done" event
+            await emit_event(run_id, done_step, {"tool": tool_name, "result": str(result)})
+
+        # ── Step: Completed ──
+        await emit_event(run_id, "COMPLETED", {})
 
     except Exception as e:
         error_msg = f" Agent Error: {e}"
         print(error_msg)
+        await emit_event(run_id, "ERROR", {"error": str(e)})
         with open(os.path.join(ANALYSIS_DIR, f"{run_id}_error.txt"), "w") as f:
             f.write(error_msg)
+
+
+# ── Webhook Endpoint ───────────────────────────────
 
 @app.post("/webhook")
 async def handle_webhook(
@@ -130,42 +222,49 @@ async def handle_webhook(
     branch: str = Form(...),
     commit: str = Form(None)
 ):
+    # ── Step: Received ──
+    await emit_event(run_id, "RECEIVED", {"repo": repo, "branch": branch, "status": status})
+
     # 0. Fetch logs from GitHub API
     try:
         if "/" not in repo:
-            owner = "VarunChavda78" # Default to user if repo name is provided without owner
+            owner = "VarunChavda78"
             repo_name = repo
         else:
             owner, repo_name = repo.split("/", 1)
-            
+
         print(f" Fetching logs from GitHub: {owner}/{repo_name} (Run ID: {run_id})")
         logs_text = fetch_workflow_logs(owner, repo_name, run_id)
-        
+
     except Exception as e:
         print(f" Failed to fetch logs from GitHub: {e}")
+        await emit_event(run_id, "ERROR", {"error": f"Could not fetch logs: {str(e)}"})
         return JSONResponse(
-            status_code=400, 
+            status_code=400,
             content={"status": "error", "message": f"Could not fetch logs: {str(e)}"}
         )
 
-    # 1. Save logs to disk (Persistence)
+    # ── Step: Logs Fetched ──
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_filename = f"{run_id}_{status}_{timestamp}.log"
     log_path = os.path.join(LOG_DIR, log_filename)
-    
+
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(logs_text)
-    
+
     print(f" Received webhook for {repo}. Status: {status}. Logs saved to {log_path}")
+    await emit_event(run_id, "LOGS_FETCHED", {"log_file": log_filename})
 
     # 2. Trigger Agent in background (Non-blocking)
     background_tasks.add_task(run_agent_workflow, status, repo, run_id, branch, logs_text)
 
     return {"status": "accepted", "log_file": log_filename}
 
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "mcp_server": "active"}
+
 
 if __name__ == "__main__":
     import uvicorn

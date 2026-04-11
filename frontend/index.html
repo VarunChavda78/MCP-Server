@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP DevOps Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>MCP DevOps Dashboard</h1>
+            <span class="subtitle">Real-time CI/CD Failure Tracking</span>
+        </div>
+        <div class="header-right">
+            <span id="connection-status" class="status-dot disconnected"></span>
+            <span id="connection-text">Connecting...</span>
+        </div>
+    </header>
+
+    <main>
+        <section id="active-section">
+            <h2>Active Workflows</h2>
+            <div id="active-workflows" class="workflow-grid">
+                <div id="empty-active" class="empty-state">
+                    <div class="pulse-ring"></div>
+                    <p>Listening for webhooks...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="completed-section">
+            <h2>Completed Workflows</h2>
+            <div id="completed-workflows" class="workflow-grid">
+                <div id="empty-completed" class="empty-state">
+                    <p>No completed workflows yet.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
