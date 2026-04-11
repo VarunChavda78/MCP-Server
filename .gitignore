@@ -7,4 +7,3 @@ __pycache__/
 .idea/
 *.sqlite3
 *.pytest_cache/
-scratch/
