@@ -10,7 +10,11 @@ from starlette.responses import StreamingResponse
 from mcp_server import mcp
 import google.generativeai as genai
 from github_client import fetch_workflow_logs, get_workflow_run_status
-from config import GOOGLE_API_KEY, SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV
+from config import (
+    GOOGLE_API_KEY, 
+    SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV,
+    JIRA_USER_ID_VARUN, JIRA_USER_ID_KHUSHI, JIRA_USER_ID_MANAV
+)
 from workflow_state import workflows, emit_event, subscribe, unsubscribe
 
 app = FastAPI(title="MCP DevOps Webhook")
@@ -138,14 +142,14 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     {logs_content[:]}
 
     TEAM MEMBERS:
-    - Varun Chavda (DevOps): {SLACK_ID_VARUN}
-    - Manav Thakkar (Frontend): {SLACK_ID_MANAV}
-    - Khushi Patel (Backend): {SLACK_ID_KHUSHI}
+    - DevOps (Varun Chavda): Slack={SLACK_ID_VARUN}, JIRA={JIRA_USER_ID_VARUN}
+    - Frontend (Manav Thakkar): Slack={SLACK_ID_MANAV}, JIRA={JIRA_USER_ID_MANAV}
+    - Backend (Khushi Patel): Slack={SLACK_ID_KHUSHI}, JIRA={JIRA_USER_ID_KHUSHI}
 
     As a DevOps Agent, you have access to the following MCP TOOLS:
     1. send_slack_notification(message, user_id=None)
     2. update_tracking_sheet(task, owner, status)
-    3. create_jira_issue(summary, description)
+    3. create_jira_issue(summary, description, assignee_id=None)
 
     DECIDE:
     1. Scan the logs for ANY issues (errors, warnings, or performance risks).
@@ -153,9 +157,9 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     3. Categorize the findings: DevOps, Frontend, or Backend.
     4. Assign the correct team member (Varun, Manav, or Khushi).
     5. NOTIFICATION RULES:
-       - If the status is FAILURE: ALWAYS notify Slack and update the sheet.
-       - If the status is SUCCESS: ONLY call 'send_slack_notification' if you find a MAJOR HIDDEN ERROR. If the logs are clean or have minor warnings, DO NOT send a Slack message.
-       - Always update the 'analysis' text even if no tools are called.
+       - If the status is FAILURE: ALWAYS notify Slack, update the sheet, and create a Jira issue.
+       - If the status is SUCCESS: ONLY call Slack/Jira if you find a MAJOR HIDDEN ERROR.
+    6. JIRA ASSIGNMENT: Use the specific JIRA Account ID for the assigned member when calling 'create_jira_issue'.
 
     RESPONSE FORMAT:
     Provide a JSON object with keys for tools to call, for example:
@@ -163,8 +167,9 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
         "analysis": "Root cause / Hidden issue description",
         "category": "Frontend|Backend|DevOps",
         "tools": [
-            {{"name": "send_slack_notification", "args": {{"message": "Reason...", "user_id": "MEMBER_ID"}}}},
-            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}}
+            {{"name": "send_slack_notification", "args": {{"message": "Reason...", "user_id": "MEMBER_SLACK_ID"}}}},
+            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}},
+            {{"name": "create_jira_issue", "args": {{"summary": "Issue...", "description": "Context...", "assignee_id": "MEMBER_JIRA_ID"}}}}
         ]
     }}
     """

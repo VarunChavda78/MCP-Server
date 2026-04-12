@@ -49,9 +49,10 @@ def update_tracking_sheet(task: str, owner: str, status: str) -> str:
         return f"Error updating Google Sheet: {e}"
 
 @mcp.tool()
-def create_jira_issue(summary: str, description: str) -> str:
+def create_jira_issue(summary: str, description: str, assignee_id: str = None) -> str:
     """
     Create a JIRA issue for tracking high-severity failures.
+    If assignee_id is provided, the issue will be assigned to that user.
     """
     from config import JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY, JIRA_ISSUE_TYPE
     
@@ -80,6 +81,9 @@ def create_jira_issue(summary: str, description: str) -> str:
             }
         }
     }
+
+    if assignee_id:
+        payload["fields"]["assignee"] = {"id": assignee_id}
 
     try:
         resp = requests.post(api_url, json=payload, auth=auth, headers=headers)
