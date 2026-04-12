@@ -218,9 +218,17 @@ function createWorkflowCard(wf) {
 function updateWorkflowCard(card, wf) {
     // ── Status Badge ──
     const badge = card.querySelector(".status-badge");
+    const hasBeenRejected = wf.steps_completed.includes("REJECTED");
+    const hasBeenApproved = wf.steps_completed.includes("APPROVED");
+
     if (wf.current_step === "COMPLETED") {
-        badge.className = "status-badge success";
-        badge.textContent = "Completed";
+        if (hasBeenRejected) {
+            badge.className = "status-badge failed";
+            badge.textContent = "Rejected";
+        } else {
+            badge.className = "status-badge success";
+            badge.textContent = "Completed";
+        }
         card.classList.remove("error");
     } else if (wf.current_step === "ERROR") {
         badge.className = "status-badge failed";
@@ -317,8 +325,9 @@ function updateWorkflowCard(card, wf) {
         div.className = "tool-result";
         const icon = toolIcons[toolName] || ">";
         const displayName = toolName.replace(/_/g, " ");
-        const statusText = resultStep ? (resultStep.data.result || "Done") : "Pending...";
-        const statusClass = resultStep ? "tool-status" : "tool-status pending";
+        const isRejected = wf.current_step === "REJECTED" || wf.steps_completed.includes("REJECTED");
+        const statusText = resultStep ? (resultStep.data.result || "Done") : (isRejected ? "Rejected" : "Pending...");
+        const statusClass = resultStep ? "tool-status" : (isRejected ? "tool-status rejected" : "tool-status pending");
 
         div.innerHTML = `
             <span class="tool-icon">${icon}</span>
@@ -358,30 +367,9 @@ function updateWorkflowCard(card, wf) {
 // ── Helpers ───────────────────────────────────────
 
 function getVisibleSteps(wf) {
-    // Base steps always shown
-    const base = PIPELINE_STEPS.slice(0, 4); // RECEIVED through LLM_COMPLETE
-
-    // Tool steps: show only the planned ones (or all if not yet planned)
-    const toolSteps = [];
-    if (wf.planned_tools.length > 0) {
-        wf.planned_tools.forEach(toolName => {
-            const stepId = TOOL_STEP_MAP[toolName];
-            const pStep = PIPELINE_STEPS.find(s => s.id === stepId);
-            if (pStep) toolSteps.push(pStep);
-        });
-    } else {
-        // Before TOOLS_PLANNED, show all tool steps as possibilities
-        const allDoneEvents = new Set(wf.steps.map(s => s.step));
-        if (allDoneEvents.has("ANALYZING_LLM") || allDoneEvents.has("LLM_COMPLETE")) {
-            // LLM phase reached, show default tools
-            toolSteps.push(...PIPELINE_STEPS.slice(4, 7));
-        }
-    }
-
-    // Final step
-    const done = PIPELINE_STEPS.find(s => s.id === "COMPLETED");
-
-    return [...base, ...toolSteps, done];
+    // Show only core workflow steps in the pipeline bar to avoid redundancy with tool cards below
+    const coreStepIds = ["RECEIVED", "WAITING_FOR_GITHUB", "LOGS_FETCHED", "ANALYZING_LLM", "LLM_COMPLETE", "AWAITING_APPROVAL", "COMPLETED"];
+    return PIPELINE_STEPS.filter(s => coreStepIds.includes(s.id));
 }
 
 function formatStepName(step) {
