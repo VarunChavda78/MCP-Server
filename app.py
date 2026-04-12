@@ -124,11 +124,7 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
             return
 
     # Once we have logs_content (either from param or from polling)
-    if status != "failure":
-        print(f"Skipping agent analysis for non-failure run: {run_id}")
-        await emit_event(run_id, "SKIPPED", {"reason": "status is successful"})
-        return
-    
+    # We now analyze ALL runs to find hidden errors, even if the status is success
     await emit_event(run_id, "LOGS_FETCHED", {"message": "Final logs received and unzipped."})
     print(f" Agent starting analysis for {repo} (Run: {run_id})")
 
@@ -136,7 +132,7 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     await emit_event(run_id, "ANALYZING_LLM", {})
 
     prompt = f"""
-    A CI/CD pipeline failed in repo '{repo}' on branch '{branch}'.
+    A CI/CD pipeline finished in repo '{repo}' on branch '{branch}' with Status: '{status.upper()}'.
 
     LOGS:
     {logs_content[:]}
@@ -152,24 +148,23 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
     3. create_jira_issue(summary, description)
 
     DECIDE:
-    1. What is the root cause?
-    2. Categorize the error: DevOps, Frontend, or Backend.
-    3. Assign the correct team member and use their SLACK ID:
-       - DevOps -> Varun Chavda
-       - Frontend -> Manav Thakkar
-       - Backend -> Khushi Patel
-    4. Should we notify Slack? (Yes, always on failure. Include the correct 'user_id' for @mention)
-    5. Should we update the sheet? (Yes, use the assigned member's name as 'owner')
-    6. Should we create a Jira issue? (YES, if it's a critical infrastructure failure like a credential error, docker daemon issue, or recurring environmental problem).
+    1. Scan the logs for ANY issues (errors, warnings, or performance risks).
+    2. HIDDEN ERROR ANALYSIS: Even if the status is SUCCESS, look for silent failures (retries, deprecation, non-fatal build errors).
+    3. Categorize the findings: DevOps, Frontend, or Backend.
+    4. Assign the correct team member (Varun, Manav, or Khushi).
+    5. NOTIFICATION RULES:
+       - If the status is FAILURE: ALWAYS notify Slack and update the sheet.
+       - If the status is SUCCESS: ONLY call 'send_slack_notification' if you find a MAJOR HIDDEN ERROR. If the logs are clean or have minor warnings, DO NOT send a Slack message.
+       - Always update the 'analysis' text even if no tools are called.
 
     RESPONSE FORMAT:
     Provide a JSON object with keys for tools to call, for example:
     {{
-        "analysis": "Brief root cause and category",
+        "analysis": "Root cause / Hidden issue description",
+        "category": "Frontend|Backend|DevOps",
         "tools": [
-            {{"name": "send_slack_notification", "args": {{"message": "Analysis details...", "user_id": "MEMBER_ID"}}}},
-            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}},
-            {{"name": "create_jira_issue", "args": {{"summary": "Critical failure in...", "description": "Full log context..."}}}}
+            {{"name": "send_slack_notification", "args": {{"message": "Reason...", "user_id": "MEMBER_ID"}}}},
+            {{"name": "update_tracking_sheet", "args": {{"task": "Fix...", "owner": "Member Name", "status": "Pending"}}}}
         ]
     }}
     """
