@@ -140,7 +140,7 @@ function renderWorkflow(wf) {
     updateWorkflowCard(card, wf);
 
     // Place in correct section
-    const isFinished = wf.current_step === "COMPLETED" || wf.current_step === "ERROR" || wf.current_step === "SKIPPED";
+    const isFinished = wf.current_step === "COMPLETED" || wf.current_step === "ERROR" || wf.current_step === "SKIPPED" || wf.current_step === "REJECTED";
 
     if (isFinished) {
         if (card.parentElement !== completedContainer) {

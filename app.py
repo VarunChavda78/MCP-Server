@@ -390,6 +390,7 @@ async def reject_workflow(run_id: str):
         return JSONResponse(status_code=404, content={"error": "Workflow not found"})
     
     await emit_event(run_id, "REJECTED", {"message": "User rejected actions."})
+    await emit_event(run_id, "COMPLETED", {})
     
     return HTMLResponse(content="""
     <html>

@@ -58,6 +58,13 @@ async def emit_event(run_id: str, step: str, data: dict = None):
     if step == "LLM_COMPLETE":
         wf["analysis"] = data.get("analysis")
 
+    if step == "REJECTED":
+        # When rejected, we want the progress bar to finish.
+        # Mark AWAITING_APPROVAL as done and set total to current completed count.
+        if "AWAITING_APPROVAL" not in wf["steps_completed"]:
+            wf["steps_completed"].append("AWAITING_APPROVAL")
+        wf["steps_total"] = len(wf["steps_completed"])
+
     if step == "ERROR":
         wf["error"] = data.get("error")
 
