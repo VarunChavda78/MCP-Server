@@ -305,7 +305,9 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
             json.dump(decision, f, indent=4)
 
         # ── Step: Tools Planned ──
-        planned_tools = [t["name"] for t in decision.get("tools", [])]
+        # De-duplicate tools to avoid showing "Send Slack" multiple times if AI suggests it twice
+        raw_tools = [t["name"] for t in decision.get("tools", [])]
+        planned_tools = list(dict.fromkeys(raw_tools)) 
         await emit_event(run_id, "TOOLS_PLANNED", {"tools": planned_tools})
 
         # ── NEW: Approval Gate ──
