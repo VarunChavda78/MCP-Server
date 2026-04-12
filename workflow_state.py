@@ -42,7 +42,8 @@ async def emit_event(run_id: str, step: str, data: dict = None):
     wf["steps"].append({"step": step, "timestamp": now, "data": data})
 
     # Track completion of concrete steps
-        "RECEIVED", "LOGS_FETCHED", "LLM_COMPLETE",
+    done_steps = {
+        "RECEIVED", "LOGS_FETCHED", "LLM_COMPLETE", 
         "SLACK_DONE", "SHEET_DONE", "JIRA_DONE", "COMPLETED",
         "APPROVED", "REJECTED",
     }

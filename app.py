@@ -84,6 +84,9 @@ async def get_workflows():
 
 @app.get("/api/workflows/{run_id}")
 async def get_workflow(run_id: str):
+    wf = workflows.get(run_id)
+    if not wf:
+        return JSONResponse(status_code=404, content={"error": "Workflow not found"})
     return wf
 
 
