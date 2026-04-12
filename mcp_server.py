@@ -83,7 +83,8 @@ def create_jira_issue(summary: str, description: str, assignee_id: str = None) -
     }
 
     if assignee_id:
-        payload["fields"]["assignee"] = {"id": assignee_id}
+        # For JIRA Cloud, accountId is the required field for assignment
+        payload["fields"]["assignee"] = {"accountId": assignee_id}
 
     try:
         resp = requests.post(api_url, json=payload, auth=auth, headers=headers)
