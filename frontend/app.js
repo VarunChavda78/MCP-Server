@@ -8,6 +8,7 @@ const PIPELINE_STEPS = [
     { id: "LOGS_FETCHED",       label: "Logs Fetched",    icon: "2" },
     { id: "ANALYZING_LLM",      label: "Analyzing",       icon: "3" },
     { id: "LLM_COMPLETE",       label: "Analyzed",        icon: "4" },
+    { id: "AWAITING_APPROVAL",  label: "Approval Needed", icon: "📧" },
     { id: "SENDING_SLACK",      label: "Slack",           icon: "5" },
     { id: "UPDATING_SHEET",     label: "Sheet",           icon: "6" },
     { id: "CREATING_JIRA",      label: "Jira",            icon: "7" },
@@ -20,6 +21,7 @@ const ACTIVE_STEPS = {
     "WAITING_FOR_GITHUB": true,
     "LOGS_FETCHED": true,
     "ANALYZING_LLM": true,
+    "AWAITING_APPROVAL": true,
     "SENDING_SLACK": true,
     "UPDATING_SHEET": true,
     "CREATING_JIRA": true,
@@ -28,6 +30,7 @@ const ACTIVE_STEPS = {
 const DONE_STEPS = new Set([
     "RECEIVED", "LOGS_FETCHED", "LLM_COMPLETE",
     "SLACK_DONE", "SHEET_DONE", "JIRA_DONE", "COMPLETED",
+    "APPROVED", "REJECTED",
 ]);
 
 // Map in-progress step -> pipeline step id for marking active
@@ -45,6 +48,9 @@ const STEP_TO_PIPELINE = {
     "JIRA_DONE": "CREATING_JIRA",
     "COMPLETED": "COMPLETED",
     "TOOLS_PLANNED": "LLM_COMPLETE",
+    "AWAITING_APPROVAL": "AWAITING_APPROVAL",
+    "APPROVED": "AWAITING_APPROVAL",
+    "REJECTED": "AWAITING_APPROVAL",
     "ERROR": null,
     "SKIPPED": null,
 };
@@ -56,6 +62,7 @@ const PIPELINE_DONE_MAP = {
     "LOGS_FETCHED": "LOGS_FETCHED",
     "ANALYZING_LLM": "LLM_COMPLETE",
     "LLM_COMPLETE": "LLM_COMPLETE",
+    "AWAITING_APPROVAL": "AWAITING_APPROVAL",
     "SENDING_SLACK": "SLACK_DONE",
     "UPDATING_SHEET": "SHEET_DONE",
     "CREATING_JIRA": "JIRA_DONE",
@@ -391,6 +398,9 @@ function formatStepName(step) {
         "CREATING_JIRA": "Creating Jira...",
         "JIRA_DONE": "Jira Created",
         "TOOLS_PLANNED": "Planning Tools",
+        "AWAITING_APPROVAL": "Awaiting Approval",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
         "COMPLETED": "Completed",
         "ERROR": "Error",
         "SKIPPED": "Skipped",

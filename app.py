@@ -3,7 +3,7 @@ import asyncio
 import json
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse
@@ -13,9 +13,13 @@ from github_client import fetch_workflow_logs, get_workflow_run_status
 from config import (
     GOOGLE_API_KEY, 
     SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV,
-    JIRA_USER_ID_VARUN, JIRA_USER_ID_KHUSHI, JIRA_USER_ID_MANAV
+    JIRA_USER_ID_VARUN, JIRA_USER_ID_KHUSHI, JIRA_USER_ID_MANAV,
+    SMTP_USER, SMTP_PASS, SMTP_SERVER, SMTP_PORT, APPROVER_EMAIL, BASE_URL
 )
 from workflow_state import workflows, emit_event, subscribe, unsubscribe
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = FastAPI(title="MCP DevOps Webhook")
 
@@ -80,10 +84,108 @@ async def get_workflows():
 
 @app.get("/api/workflows/{run_id}")
 async def get_workflow(run_id: str):
-    wf = workflows.get(run_id)
-    if not wf:
-        return JSONResponse(status_code=404, content={"error": "Workflow not found"})
     return wf
+
+
+# ── Approval Helpers ────────────────────────────────
+
+def send_approval_email(run_id: str, analysis: str, tools: list):
+    """Send an HTML email with Approve/Reject links."""
+    if not all([SMTP_USER, SMTP_PASS, APPROVER_EMAIL]):
+        print(" [Email] SMTP not configured. Skipping email.")
+        return
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"🚀 Approval Required: Pipeline Failure in {run_id}"
+    msg["From"] = SMTP_USER
+    msg["To"] = APPROVER_EMAIL
+
+    tools_list = "".join([f"<li>{t}</li>" for t in tools])
+    approve_url = f"{BASE_URL}/api/approve/{run_id}"
+    reject_url = f"{BASE_URL}/api/reject/{run_id}"
+
+    html = f"""
+    <html>
+    <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #d32f2f;">🚨 Pipeline Action Required</h2>
+        <p>A failure was detected and analyzed. Your approval is needed to execute the following tools:</p>
+        
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <strong>Analysis:</strong><br>
+            {analysis}
+        </div>
+
+        <strong>Planned Actions:</strong>
+        <ul>{tools_list}</ul>
+
+        <div style="margin-top: 30px;">
+            <a href="{approve_url}" style="background: #2e7d32; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; margin-right: 10px; font-weight: bold;">✅ Approve & Execute</a>
+            <a href="{reject_url}" style="background: #d32f2f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">❌ Reject & Skip</a>
+        </div>
+        
+        <p style="font-size: 0.8em; color: #666; margin-top: 40px;">
+            Run ID: {run_id}<br>
+            Server: {BASE_URL}
+        </p>
+    </body>
+    </html>
+    """
+    msg.attach(MIMEText(html, "html"))
+
+    try:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASS)
+            server.sendmail(SMTP_USER, APPROVER_EMAIL, msg.as_string())
+        print(f" [Email] Approval email sent to {APPROVER_EMAIL}")
+    except Exception as e:
+        print(f" [Email] Failed to send email: {e}")
+
+
+async def execute_planned_tools(run_id: str):
+    """Resumes a workflow by executing the saved tool calls."""
+    wf = workflows.get(run_id)
+    if not wf: return
+
+    # Load analysis for tool args
+    analysis_path = os.path.join(ANALYSIS_DIR, f"{run_id}_analysis.json")
+    if not os.path.exists(analysis_path):
+        print(f" [Approval] Analysis file missing for {run_id}")
+        await emit_event(run_id, "ERROR", {"error": "Analysis file missing"})
+        return
+
+    with open(analysis_path, "r") as f:
+        decision = json.load(f)
+
+    await emit_event(run_id, "APPROVED", {"message": "User approved actions."})
+
+    for tool_call in decision.get("tools", []):
+        tool_name = tool_call["name"]
+        tool_args = tool_call["args"]
+
+        step_map = {
+            "send_slack_notification": ("SENDING_SLACK", "SLACK_DONE"),
+            "update_tracking_sheet": ("UPDATING_SHEET", "SHEET_DONE"),
+            "create_jira_issue": ("CREATING_JIRA", "JIRA_DONE"),
+        }
+        start_step, done_step = step_map.get(tool_name, (f"RUNNING_{tool_name.upper()}", f"{tool_name.upper()}_DONE"))
+
+        print(f" Executing MCP Tool: {tool_name}")
+        await emit_event(run_id, start_step, {"tool": tool_name})
+
+        if tool_name == "create_jira_issue":
+            from mcp_server import create_jira_issue
+            result = await asyncio.to_thread(create_jira_issue, **tool_args)
+        elif tool_name == "send_slack_notification":
+            from mcp_server import send_slack_notification
+            result = await asyncio.to_thread(send_slack_notification, **tool_args)
+        elif tool_name == "update_tracking_sheet":
+            from mcp_server import update_tracking_sheet
+            result = await asyncio.to_thread(update_tracking_sheet, **tool_args)
+
+        await emit_event(run_id, done_step, {"tool": tool_name, "result": str(result)})
+
+    await emit_event(run_id, "COMPLETED", {})
 
 
 # ── Agent Workflow (instrumented with events) ──────
@@ -203,40 +305,15 @@ async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, l
         planned_tools = [t["name"] for t in decision.get("tools", [])]
         await emit_event(run_id, "TOOLS_PLANNED", {"tools": planned_tools})
 
-        # ── Execute Tools ──
-        for tool_call in decision.get("tools", []):
-            tool_name = tool_call["name"]
-            tool_args = tool_call["args"]
+        # ── NEW: Approval Gate ──
+        if planned_tools:
+            await emit_event(run_id, "AWAITING_APPROVAL", {"message": "Waiting for manual approval via email."})
+            # Send email in a thread to avoid blocking
+            asyncio.create_task(asyncio.to_thread(send_approval_email, run_id, decision.get("analysis"), planned_tools))
+            print(f" [Workflow] Paused for approval: {run_id}")
+            return # Stop here and wait for /approve or /reject
 
-            # Map tool name to step names
-            step_map = {
-                "send_slack_notification": ("SENDING_SLACK", "SLACK_DONE"),
-                "update_tracking_sheet": ("UPDATING_SHEET", "SHEET_DONE"),
-                "create_jira_issue": ("CREATING_JIRA", "JIRA_DONE"),
-            }
-
-            start_step, done_step = step_map.get(tool_name, (f"RUNNING_{tool_name.upper()}", f"{tool_name.upper()}_DONE"))
-
-            # Emit "starting" event
-            print(f" Executing MCP Tool: {tool_name}")
-            await emit_event(run_id, start_step, {"tool": tool_name})
-
-            # Execute the tool in a thread (they do blocking HTTP calls)
-            result = None
-            if tool_name == "create_jira_issue":
-                from mcp_server import create_jira_issue
-                result = await asyncio.to_thread(create_jira_issue, **tool_args)
-            elif tool_name == "send_slack_notification":
-                from mcp_server import send_slack_notification
-                result = await asyncio.to_thread(send_slack_notification, **tool_args)
-            elif tool_name == "update_tracking_sheet":
-                from mcp_server import update_tracking_sheet
-                result = await asyncio.to_thread(update_tracking_sheet, **tool_args)
-
-            # Emit "done" event
-            await emit_event(run_id, done_step, {"tool": tool_name, "result": str(result)})
-
-        # ── Step: Completed ──
+        # ── Step: Completed (if no tools planned) ──
         await emit_event(run_id, "COMPLETED", {})
 
     except Exception as e:
@@ -279,6 +356,47 @@ async def handle_webhook(
             "run_id": run_id
         }
     )
+
+
+@app.get("/api/approve/{run_id}")
+async def approve_workflow(run_id: str, background_tasks: BackgroundTasks):
+    wf = workflows.get(run_id)
+    if not wf:
+        return JSONResponse(status_code=404, content={"error": "Workflow not found"})
+    
+    if wf["current_step"] != "AWAITING_APPROVAL":
+        return JSONResponse(status_code=400, content={"error": "Workflow is not awaiting approval"})
+
+    background_tasks.add_task(execute_planned_tools, run_id)
+    
+    return HTMLResponse(content="""
+    <html>
+        <body style="font-family: sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #2e7d32;">✅ Approved!</h1>
+            <p>The planned actions are now being executed in the background.</p>
+            <p><a href="/dashboard">Return to Dashboard</a></p>
+        </body>
+    </html>
+    """)
+
+
+@app.get("/api/reject/{run_id}")
+async def reject_workflow(run_id: str):
+    wf = workflows.get(run_id)
+    if not wf:
+        return JSONResponse(status_code=404, content={"error": "Workflow not found"})
+    
+    await emit_event(run_id, "REJECTED", {"message": "User rejected actions."})
+    
+    return HTMLResponse(content="""
+    <html>
+        <body style="font-family: sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #d32f2f;">❌ Rejected</h1>
+            <p>The planned actions have been cancelled.</p>
+            <p><a href="/dashboard">Return to Dashboard</a></p>
+        </body>
+    </html>
+    """)
 
 
 @app.get("/health")

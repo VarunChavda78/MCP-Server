@@ -31,4 +31,12 @@ JIRA_URL = os.getenv("JIRA_URL")
 JIRA_EMAIL = os.getenv("JIRA_EMAIL")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY")
-JIRA_ISSUE_TYPE = os.getenv("JIRA_ISSUE_TYPE", "Bug")
+JIRA_ISSUE_TYPE = os.getenv("JIRA_ISSUE_TYPE", "Bug")
+
+# SMTP / Approval Workflow
+SMTP_USER = os.getenv("SMTP_USER")
+SMTP_PASS = os.getenv("SMTP_PASS")
+SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+APPROVER_EMAIL = os.getenv("APPROVER_EMAIL", JIRA_EMAIL)
+BASE_URL = os.getenv("BASE_URL", "https://mcp.varunchavda.in").rstrip("/")
