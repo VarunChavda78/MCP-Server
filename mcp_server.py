@@ -87,7 +87,10 @@ def create_jira_issue(summary: str, description: str, assignee_id: str = None) -
         payload["fields"]["assignee"] = {"accountId": assignee_id}
 
     try:
+        print(f" JIRA Payload: {payload}")
         resp = requests.post(api_url, json=payload, auth=auth, headers=headers)
+        print(f" JIRA Response ({resp.status_code}): {resp.text}")
+        
         if resp.status_code == 201:
             issue_key = resp.json().get("key")
             return f"Successfully created JIRA issue: {issue_key}"
