@@ -4,14 +4,9 @@ const workflows = {};
 // All possible pipeline steps in order
 const PIPELINE_STEPS = [
     { id: "RECEIVED",           label: "Received",        icon: "1" },
-    { id: "WAITING_FOR_GITHUB", label: "Finalizing Logs", icon: "⌛" },
     { id: "LOGS_FETCHED",       label: "Logs Fetched",    icon: "2" },
-    { id: "ANALYZING_LLM",      label: "Analyzing",       icon: "3" },
-    { id: "LLM_COMPLETE",       label: "Analyzed",        icon: "4" },
-    { id: "AWAITING_APPROVAL",  label: "Approval Needed", icon: "📧" },
-    { id: "SENDING_SLACK",      label: "Slack",           icon: "5" },
-    { id: "UPDATING_SHEET",     label: "Sheet",           icon: "6" },
-    { id: "CREATING_JIRA",      label: "Jira",            icon: "7" },
+    { id: "LLM_COMPLETE",       label: "Analyzed",        icon: "3" },
+    { id: "AWAITING_APPROVAL",  label: "Approval",        icon: "📧" },
     { id: "COMPLETED",          label: "Done",            icon: "\u2713" },
 ];
 
@@ -45,7 +40,7 @@ const STEP_TO_PIPELINE = {
     "UPDATING_SHEET": "UPDATING_SHEET",
     "SHEET_DONE": "UPDATING_SHEET",
     "CREATING_JIRA": "CREATING_JIRA",
-    "JIRA_DONE": "CREATING_JIRA",
+    "JIRA_DONE": null,
     "COMPLETED": "COMPLETED",
     "TOOLS_PLANNED": "LLM_COMPLETE",
     "AWAITING_APPROVAL": "AWAITING_APPROVAL",
@@ -55,19 +50,23 @@ const STEP_TO_PIPELINE = {
     "SKIPPED": null,
 };
 
-// Pipeline step -> which "done" event marks it complete
+// Pipeline step -> which event marks it "done" (filled circle)
 const PIPELINE_DONE_MAP = {
     "RECEIVED": "RECEIVED",
-    "WAITING_FOR_GITHUB": "LOGS_FETCHED",
     "LOGS_FETCHED": "LOGS_FETCHED",
-    "ANALYZING_LLM": "LLM_COMPLETE",
     "LLM_COMPLETE": "LLM_COMPLETE",
-    "AWAITING_APPROVAL": "AWAITING_APPROVAL",
-    "SENDING_SLACK": "SLACK_DONE",
-    "UPDATING_SHEET": "SHEET_DONE",
-    "CREATING_JIRA": "JIRA_DONE",
+    "AWAITING_APPROVAL": "REJECTED", // REJECTED or APPROVED will mark this circle done
     "COMPLETED": "COMPLETED",
 };
+
+// Specific edge case for AWAITING_APPROVAL circle
+function isPipelineStepDone(stepId, allDoneEvents) {
+    if (stepId === "AWAITING_APPROVAL") {
+        return allDoneEvents.has("APPROVED") || allDoneEvents.has("REJECTED");
+    }
+    const doneEvent = PIPELINE_DONE_MAP[stepId];
+    return doneEvent && allDoneEvents.has(doneEvent);
+}
 
 // Tool name -> pipeline step id
 const TOOL_STEP_MAP = {
@@ -281,8 +280,7 @@ function updateWorkflowCard(card, wf) {
         stepEl.className = "pipeline-step";
 
         // Determine state
-        const doneEvent = PIPELINE_DONE_MAP[step.id];
-        const isDone = doneEvent && allDoneEvents.has(doneEvent);
+        const isDone = isPipelineStepDone(step.id, allDoneEvents);
         const isActive = step.id === STEP_TO_PIPELINE[wf.current_step] && !isDone;
         const isError = wf.current_step === "ERROR" && !isDone && isActive;
 
@@ -367,9 +365,7 @@ function updateWorkflowCard(card, wf) {
 // ── Helpers ───────────────────────────────────────
 
 function getVisibleSteps(wf) {
-    // Show only core workflow steps in the pipeline bar to avoid redundancy with tool cards below
-    const coreStepIds = ["RECEIVED", "WAITING_FOR_GITHUB", "LOGS_FETCHED", "ANALYZING_LLM", "LLM_COMPLETE", "AWAITING_APPROVAL", "COMPLETED"];
-    return PIPELINE_STEPS.filter(s => coreStepIds.includes(s.id));
+    return PIPELINE_STEPS; // Now matches our 5-milestone count perfectly
 }
 
 function formatStepName(step) {

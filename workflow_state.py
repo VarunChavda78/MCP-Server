@@ -26,7 +26,7 @@ async def emit_event(run_id: str, step: str, data: dict = None):
             "current_step": step,
             "steps": [],           # ordered list of {step, timestamp, data}
             "steps_completed": [],
-            "steps_total": 5,      # default estimate, updated after LLM decides
+            "steps_total": 5,      # Core: Received, Logs, Analyzed, Approval, Completed
             "planned_tools": [],
             "error": None,
             "analysis": None,
@@ -41,19 +41,19 @@ async def emit_event(run_id: str, step: str, data: dict = None):
     # Append to step log
     wf["steps"].append({"step": step, "timestamp": now, "data": data})
 
-    # Track completion of concrete steps
-    done_steps = {
+    # Track completion of 5 core milestones for the progress bar
+    milestones = {
         "RECEIVED", "LOGS_FETCHED", "LLM_COMPLETE", 
-        "SLACK_DONE", "SHEET_DONE", "JIRA_DONE", "COMPLETED",
-        "APPROVED", "REJECTED",
+        "APPROVED", "REJECTED", "COMPLETED"
     }
-    if step in done_steps:
-        wf["steps_completed"].append(step)
+    if step in milestones:
+        # Don't double-count if events repeat
+        if step not in wf["steps_completed"]:
+            wf["steps_completed"].append(step)
 
     if step == "TOOLS_PLANNED":
         wf["planned_tools"] = data.get("tools", [])
-        # Recompute total: RECEIVED + LOGS_FETCHED + LLM_COMPLETE + per-tool-done + COMPLETED
-        wf["steps_total"] = 3 + len(wf["planned_tools"]) + 1
+        # We no longer recompute total based on tools to keep progress bar aligned with core UI nodes
 
     if step == "LLM_COMPLETE":
         wf["analysis"] = data.get("analysis")
