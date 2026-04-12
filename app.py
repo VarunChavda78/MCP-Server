@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse
 from mcp_server import mcp
 import google.generativeai as genai
-from github_client import fetch_workflow_logs
+from github_client import fetch_workflow_logs, get_workflow_run_status
 from config import GOOGLE_API_KEY, SLACK_ID_VARUN, SLACK_ID_KHUSHI, SLACK_ID_MANAV
 from workflow_state import workflows, emit_event, subscribe, unsubscribe
 
@@ -84,16 +84,52 @@ async def get_workflow(run_id: str):
 
 # ── Agent Workflow (instrumented with events) ──────
 
-async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, logs_content: str):
+async def run_agent_workflow(status: str, repo: str, run_id: str, branch: str, logs_content: str = None):
     """
     The 'Brain' of the MCP Server.
-    Decides which tools to call based on the failure context.
+    Now includes a polling loop to wait for the GitHub workflow to finalize.
     """
-    if status != "failure":
-        print(f"Skipping agent workflow for successful run: {run_id}")
-        await emit_event(run_id, "SKIPPED", {"reason": "non-failure status"})
-        return {"status": "success"}
+    # ── Step: Polling GitHub ──
+    if "/" not in repo:
+        owner, repo_name = "VarunChavda78", repo
+    else:
+        owner, repo_name = repo.split("/", 1)
 
+    if not logs_content:
+        print(f" Waiting for GitHub workflow {run_id} to complete...")
+        await emit_event(run_id, "WAITING_FOR_GITHUB", {"message": "Waiting for GitHub to finalize logs..."})
+        
+        max_retries = 20  # ~7-10 minutes
+        log_fetched = False
+        
+        for i in range(max_retries):
+            try:
+                run_status, conclusion = get_workflow_run_status(owner, repo_name, run_id)
+                print(f" Run {run_id} status: {run_status} ({conclusion})")
+                
+                if run_status == "completed":
+                    # Now fetch the real logs
+                    print(f" Run {run_id} completed. Fetching logs...")
+                    logs_content = fetch_workflow_logs(owner, repo_name, run_id)
+                    log_fetched = True
+                    break
+            except Exception as e:
+                print(f" Error checking status for {run_id}: {e}")
+            
+            await asyncio.sleep(20) # poll every 20s
+            
+        if not log_fetched:
+            print(f" Timeout waiting for logs for {run_id}")
+            await emit_event(run_id, "ERROR", {"error": "Timeout waiting for GitHub to finalize logs."})
+            return
+
+    # Once we have logs_content (either from param or from polling)
+    if status != "failure":
+        print(f"Skipping agent analysis for non-failure run: {run_id}")
+        await emit_event(run_id, "SKIPPED", {"reason": "status is successful"})
+        return
+    
+    await emit_event(run_id, "LOGS_FETCHED", {"message": "Final logs received and unzipped."})
     print(f" Agent starting analysis for {repo} (Run: {run_id})")
 
     # ── Step: Analyzing with LLM ──
@@ -223,42 +259,26 @@ async def handle_webhook(
     commit: str = Form(None)
 ):
     # ── Step: Received ──
-    await emit_event(run_id, "RECEIVED", {"repo": repo, "branch": branch, "status": status})
+    print(f" Received webhook for {repo} (ID: {run_id}, Status: {status})")
+    await emit_event(run_id, "RECEIVED", {
+        "repo": repo, 
+        "branch": branch, 
+        "status": status,
+        "message": "Webhook received. Server will poll GitHub for finalized logs."
+    })
 
-    # 0. Fetch logs from GitHub API
-    try:
-        if "/" not in repo:
-            owner = "VarunChavda78"
-            repo_name = repo
-        else:
-            owner, repo_name = repo.split("/", 1)
+    # Trigger Agent in background (Non-blocking)
+    # We pass logs_content=None to force the background task to poll GitHub for the "perfect" logs archive
+    background_tasks.add_task(run_agent_workflow, status, repo, run_id, branch, None)
 
-        print(f" Fetching logs from GitHub: {owner}/{repo_name} (Run ID: {run_id})")
-        logs_text = fetch_workflow_logs(owner, repo_name, run_id)
-
-    except Exception as e:
-        print(f" Failed to fetch logs from GitHub: {e}")
-        await emit_event(run_id, "ERROR", {"error": f"Could not fetch logs: {str(e)}"})
-        return JSONResponse(
-            status_code=400,
-            content={"status": "error", "message": f"Could not fetch logs: {str(e)}"}
-        )
-
-    # ── Step: Logs Fetched ──
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_filename = f"{run_id}_{status}_{timestamp}.log"
-    log_path = os.path.join(LOG_DIR, log_filename)
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        f.write(logs_text)
-
-    print(f" Received webhook for {repo}. Status: {status}. Logs saved to {log_path}")
-    await emit_event(run_id, "LOGS_FETCHED", {"log_file": log_filename})
-
-    # 2. Trigger Agent in background (Non-blocking)
-    background_tasks.add_task(run_agent_workflow, status, repo, run_id, branch, logs_text)
-
-    return {"status": "accepted", "log_file": log_filename}
+    return JSONResponse(
+        status_code=202,
+        content={
+            "status": "accepted", 
+            "message": "Webhook received. Agent analysis scheduled in background.",
+            "run_id": run_id
+        }
+    )
 
 
 @app.get("/health")

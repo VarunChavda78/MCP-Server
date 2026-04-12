@@ -32,3 +32,18 @@ def fetch_workflow_logs(owner, repo, run_id):
             return response.text
     else:
         raise Exception(f"Failed to fetch logs: {response.status_code}")
+
+
+def get_workflow_run_status(owner, repo, run_id):
+    """Check the status and conclusion of a workflow run."""
+    url = f"https://api.github.com/repos/{owner}/{repo}/actions/runs/{run_id}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data.get("status"), data.get("conclusion")
+    else:
+        raise Exception(f"Failed to fetch run status: {response.status_code}")

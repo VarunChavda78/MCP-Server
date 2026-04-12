@@ -3,19 +3,21 @@ const workflows = {};
 
 // All possible pipeline steps in order
 const PIPELINE_STEPS = [
-    { id: "RECEIVED",       label: "Received",   icon: "1" },
-    { id: "LOGS_FETCHED",   label: "Logs Fetched", icon: "2" },
-    { id: "ANALYZING_LLM",  label: "Analyzing",  icon: "3" },
-    { id: "LLM_COMPLETE",   label: "Analyzed",   icon: "4" },
-    { id: "SENDING_SLACK",  label: "Slack",       icon: "5" },
-    { id: "UPDATING_SHEET", label: "Sheet",       icon: "6" },
-    { id: "CREATING_JIRA",  label: "Jira",        icon: "7" },
-    { id: "COMPLETED",      label: "Done",        icon: "\u2713" },
+    { id: "RECEIVED",           label: "Received",        icon: "1" },
+    { id: "WAITING_FOR_GITHUB", label: "Finalizing Logs", icon: "⌛" },
+    { id: "LOGS_FETCHED",       label: "Logs Fetched",    icon: "2" },
+    { id: "ANALYZING_LLM",      label: "Analyzing",       icon: "3" },
+    { id: "LLM_COMPLETE",       label: "Analyzed",        icon: "4" },
+    { id: "SENDING_SLACK",      label: "Slack",           icon: "5" },
+    { id: "UPDATING_SHEET",     label: "Sheet",           icon: "6" },
+    { id: "CREATING_JIRA",      label: "Jira",            icon: "7" },
+    { id: "COMPLETED",          label: "Done",            icon: "\u2713" },
 ];
 
 // Which steps are "in-progress" variants (map to their "done" counterpart)
 const ACTIVE_STEPS = {
     "RECEIVED": true,
+    "WAITING_FOR_GITHUB": true,
     "LOGS_FETCHED": true,
     "ANALYZING_LLM": true,
     "SENDING_SLACK": true,
@@ -31,6 +33,7 @@ const DONE_STEPS = new Set([
 // Map in-progress step -> pipeline step id for marking active
 const STEP_TO_PIPELINE = {
     "RECEIVED": "RECEIVED",
+    "WAITING_FOR_GITHUB": "WAITING_FOR_GITHUB",
     "LOGS_FETCHED": "LOGS_FETCHED",
     "ANALYZING_LLM": "ANALYZING_LLM",
     "LLM_COMPLETE": "LLM_COMPLETE",
@@ -49,6 +52,7 @@ const STEP_TO_PIPELINE = {
 // Pipeline step -> which "done" event marks it complete
 const PIPELINE_DONE_MAP = {
     "RECEIVED": "RECEIVED",
+    "WAITING_FOR_GITHUB": "LOGS_FETCHED",
     "LOGS_FETCHED": "LOGS_FETCHED",
     "ANALYZING_LLM": "LLM_COMPLETE",
     "LLM_COMPLETE": "LLM_COMPLETE",
@@ -376,6 +380,7 @@ function getVisibleSteps(wf) {
 function formatStepName(step) {
     const names = {
         "RECEIVED": "Received",
+        "WAITING_FOR_GITHUB": "Finalizing Logs...",
         "LOGS_FETCHED": "Logs Fetched",
         "ANALYZING_LLM": "Analyzing...",
         "LLM_COMPLETE": "Analyzed",
